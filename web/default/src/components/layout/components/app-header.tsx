@@ -16,6 +16,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
+import { Link, useRouterState } from '@tanstack/react-router'
+import { BookOpen, Tags } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useNotifications } from '@/hooks/use-notifications'
 import { useTopNavLinks } from '@/hooks/use-top-nav-links'
 import { ConfigDrawer } from '@/components/config-drawer'
@@ -26,7 +29,6 @@ import { Search } from '@/components/search'
 import { defaultTopNavLinks } from '../config/top-nav.config'
 import { type TopNavLink } from '../types'
 import { Header } from './header'
-import { SystemBrand } from './system-brand'
 import { TopNav } from './top-nav'
 
 /**
@@ -99,12 +101,15 @@ export function AppHeader({
   showSearch = true,
   rightContent,
   showNotifications = true,
-  showConfigDrawer = true,
+  showConfigDrawer = false,
   showProfileDropdown = true,
 }: AppHeaderProps) {
+  const { t } = useTranslation()
   // Prioritize dynamically generated links from backend
   const dynamicLinks = useTopNavLinks()
   const links = dynamicLinks.length > 0 ? dynamicLinks : navLinks
+  const location = useRouterState({ select: (state) => state.location })
+  const pageMeta = getTokensRelayPageMeta(location.href, t)
 
   // Notifications hook
   const notifications = useNotifications()
@@ -112,19 +117,42 @@ export function AppHeader({
   return (
     <>
       <Header>
-        <SystemBrand variant='inline' />
-
         {leftContent ? (
           <div className='ms-2 flex items-center'>{leftContent}</div>
+        ) : pageMeta ? (
+          <div className='ms-1 min-w-0 flex-1'>
+            <h1 className='truncate text-base leading-5 font-semibold tracking-tight'>
+              {pageMeta.title}
+            </h1>
+            {pageMeta.subtitle ? (
+              <p className='text-muted-foreground hidden truncate text-xs leading-4 sm:block'>
+                {pageMeta.subtitle}
+              </p>
+            ) : null}
+          </div>
         ) : null}
 
         {rightContent ?? (
-          <div className='ms-auto flex items-center gap-1 sm:gap-2'>
+          <div className='ms-auto flex shrink-0 items-center gap-1 sm:gap-2'>
             {showTopNav && (
               <div className='me-1 hidden lg:block'>
                 <TopNav links={links} />
               </div>
             )}
+            <Link
+              to='/pricing'
+              className='text-muted-foreground hover:bg-accent hover:text-accent-foreground hidden h-9 items-center gap-1.5 rounded-lg px-3 text-sm font-medium transition-colors lg:inline-flex'
+            >
+              <Tags className='size-4' />
+              {t('Pricing')}
+            </Link>
+            <Link
+              to='/about'
+              className='text-muted-foreground hover:bg-accent hover:text-accent-foreground hidden h-9 items-center gap-1.5 rounded-lg px-3 text-sm font-medium transition-colors xl:inline-flex'
+            >
+              <BookOpen className='size-4' />
+              {t('Docs')}
+            </Link>
             {showSearch && <Search />}
             {showNotifications && (
               <NotificationPopover
@@ -146,4 +174,92 @@ export function AppHeader({
       </Header>
     </>
   )
+}
+
+type PageMeta = {
+  title: string
+  subtitle?: string
+}
+
+function getTokensRelayPageMeta(
+  href: string,
+  t: (key: string) => string
+): PageMeta | null {
+  const [pathname, query = ''] = href.split('?')
+  const section = new URLSearchParams(query).get('section') || 'purchase'
+
+  if (pathname.startsWith('/keys')) {
+    return {
+      title: t('API Keys'),
+      subtitle: t('Manage your API keys and access tokens'),
+    }
+  }
+  if (pathname.startsWith('/usage-logs')) {
+    return {
+      title: t('Usage Logs'),
+      subtitle: t('View and analyze your API usage history'),
+    }
+  }
+  if (pathname.startsWith('/wallet')) {
+    if (section === 'orders') {
+      return {
+        title: t('Order History'),
+        subtitle: t('Top-up and subscription order records'),
+      }
+    }
+    if (section === 'redeem') {
+      return {
+        title: t('Redemption Code'),
+        subtitle: t('Redeem a code to add balance or benefits'),
+      }
+    }
+    if (section === 'affiliate') {
+      return {
+        title: t('Referral Rewards'),
+        subtitle: t('Invite users and transfer rewards to your balance'),
+      }
+    }
+    if (section === 'subscriptions') {
+      return {
+        title: t('My Subscriptions'),
+        subtitle: t('View your subscription plans and usage'),
+      }
+    }
+    return {
+      title: t('Recharge / Subscription'),
+      subtitle: t('Add funds and manage subscription plans'),
+    }
+  }
+  if (pathname.startsWith('/profile')) {
+    return {
+      title: t('Profile Settings'),
+      subtitle: t('Manage your account information and settings'),
+    }
+  }
+  if (pathname.startsWith('/users')) {
+    return {
+      title: t('User Management'),
+      subtitle: t('Manage platform users, balances, and permissions'),
+    }
+  }
+  if (pathname.startsWith('/channels')) {
+    return {
+      title: t('Channel Management'),
+      subtitle: t('Manage upstream channels and load policies'),
+    }
+  }
+  if (pathname.startsWith('/dashboard/users')) {
+    return {
+      title: t('Dashboard'),
+      subtitle: t('Platform operations overview'),
+    }
+  }
+  if (pathname.startsWith('/dashboard')) {
+    return {
+      title: t('Dashboard'),
+      subtitle: t('Welcome back! Here is your account overview.'),
+    }
+  }
+
+  return null
 }

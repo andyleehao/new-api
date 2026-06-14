@@ -16,24 +16,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { cn } from '@/lib/utils'
-import { SidebarTrigger } from '@/components/ui/sidebar'
+const TOKENSRELAY_DISPLAY_NAME = '智驿 TokensRelay'
+const UNCUSTOMIZED_SYSTEM_NAMES = new Set(['New API', 'new-api'])
 
-type HeaderProps = React.HTMLAttributes<HTMLElement>
-
-export function Header({ className, children, ...props }: HeaderProps) {
-  return (
-    <header
-      className={cn(
-        'bg-card/95 supports-[backdrop-filter]:bg-card/85 sticky top-0 z-40 h-[var(--app-header-height,4rem)] w-full shrink-0 border-b backdrop-blur',
-        className
-      )}
-      {...props}
-    >
-      <div className='flex h-full items-center gap-2 px-3 sm:gap-3 sm:px-4'>
-        <SidebarTrigger variant='ghost' className='size-9 rounded-lg lg:hidden' />
-        {children}
-      </div>
-    </header>
-  )
+export function resolveTokensRelayDisplayName(name?: string | null) {
+  const trimmed = name?.trim()
+  if (!trimmed || UNCUSTOMIZED_SYSTEM_NAMES.has(trimmed)) {
+    return TOKENSRELAY_DISPLAY_NAME
+  }
+  return trimmed
 }

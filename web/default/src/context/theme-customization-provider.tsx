@@ -134,11 +134,14 @@ export function ThemeCustomizationProvider(props: {
 
   // Mirror state to the <body> via data-* attributes so theme-presets.css can
   // override CSS variables at the right cascade layer.
+  //
+  // The preset attribute is always written (never removed for the default):
+  // the shipped default is the `tokensrelay` brand preset, whose CSS lives in a
+  // `[data-theme-preset='tokensrelay']` block — removing the attribute would strip
+  // the brand styling. The plain `default` preset has no CSS block, so
+  // carrying `data-theme-preset='default'` is inert by design.
   useEffect(() => {
-    applyAttribute(
-      'data-theme-preset',
-      preset === DEFAULT_THEME_CUSTOMIZATION.preset ? null : preset
-    )
+    applyAttribute('data-theme-preset', preset)
   }, [preset])
 
   // Font is the one axis where we resolve before writing the attribute:

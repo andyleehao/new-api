@@ -417,10 +417,13 @@ For commercial licensing, please contact support@quantumnous.com
  *   - `anthropic`: warm cream surfaces are a brand choice, NOT a primary-mix
  *     derivation (the Anthropic system deliberately uses warm neutrals for
  *     cards/borders rather than tinting them with the clay accent).
- *   - `simple-large`: keeps intentionally neutral, high-contrast surfaces. */
+ *   - `simple-large`: keeps intentionally neutral, high-contrast surfaces.
+ *   - `tokensrelay`: pure white cards on a mint-gray canvas with hairline borders
+ *     are the brand's defining surface treatment — tinting them with the
+ *     teal accent would destroy the airy look. */
 [data-theme-preset]:not([data-theme-preset='default']):not(
     [data-theme-preset='anthropic']
-  ):not([data-theme-preset='simple-large']) {
+  ):not([data-theme-preset='simple-large']):not([data-theme-preset='tokensrelay']) {
   --card: color-mix(in oklch, var(--primary) 3%, var(--background));
   --popover: color-mix(in oklch, var(--primary) 5%, var(--background));
   --muted: color-mix(in oklch, var(--primary) 7%, var(--background));
@@ -445,7 +448,7 @@ For commercial licensing, please contact support@quantumnous.com
 .dark
   [data-theme-preset]:not([data-theme-preset='default']):not(
     [data-theme-preset='anthropic']
-  ):not([data-theme-preset='simple-large']) {
+  ):not([data-theme-preset='simple-large']):not([data-theme-preset='tokensrelay']) {
   --card: color-mix(in oklch, var(--primary) 8%, var(--background));
   --popover: color-mix(in oklch, var(--primary) 12%, var(--background));
   --muted: color-mix(in oklch, var(--primary) 12%, var(--background));
@@ -601,6 +604,1303 @@ For commercial licensing, please contact support@quantumnous.com
 
   --skeleton-base: oklch(0.295 0.004 60);
   --skeleton-highlight: oklch(0.4 0.004 60);
+}
+
+/* ── TokensRelay 智驿 ────────────────────────────────────────────────────── */
+/*
+ * The 智驿 (TokensRelay) brand system: pure white cards floating on a
+ * mint-gray canvas (#f6f9f8) with 1px hairline borders and feather-light
+ * shadows, teal-green (#1f9d80) as the single brand accent, and a mint
+ * active state (#e7f4ef + deep teal text) for navigation.
+ *
+ * Token source of truth: web/new/css/tokensrelay.css and
+ * web/new/html/brand-spec.md (extracted from the approved page mockups).
+ *
+ * Like Anthropic, TokensRelay opts out of the semantic surface bridge above:
+ * its surfaces are deliberate white/mint neutrals, not primary-tinted
+ * derivations.
+ *
+ * Radius: the brand spec calls for 14px cards and 10px buttons/inputs.
+ * With `--radius: 0.625rem` (10px), buttons (rounded-lg = 1×) land on
+ * 10px and cards (rounded-xl = 1.4×) land on 14px exactly.
+ */
+[data-theme-preset='tokensrelay'] {
+  /* Canvas + ink — mint-gray wash under near-black green ink. */
+  --background: #f6f9f8;
+  --foreground: #15201c;
+
+  /* Pure white surfaces with hairline borders. */
+  --card: #ffffff;
+  --card-foreground: #15201c;
+  --popover: #ffffff;
+  --popover-foreground: #15201c;
+
+  /* Brand teal — buttons additionally pick up the signature gradient
+   * via the scoped rule below this block. */
+  --primary: #1f9d80;
+  --primary-foreground: #ffffff;
+
+  /* Mint pair — selected/secondary surfaces (sidebar active, chips). */
+  --secondary: #e7f4ef;
+  --secondary-foreground: #14745f;
+
+  --muted: #eef1f0;
+  --muted-foreground: #67746e;
+  --accent: #e7f4ef;
+  --accent-foreground: #14745f;
+
+  --destructive: #d4493a;
+  --destructive-foreground: #ffffff;
+  --success: #178a52;
+  --success-foreground: #ffffff;
+  --warning: #b07514;
+  --warning-foreground: #ffffff;
+  --info: #3b63d8;
+  --info-foreground: #ffffff;
+  --neutral: #97a39d;
+  --neutral-foreground: #15201c;
+
+  --border: #e5ebe8;
+  --input: #e5ebe8;
+  --ring: #1f9d80;
+
+  /* Chart palette mirrors the stat-tile bricks: teal / indigo / purple /
+   * amber / red. */
+  --chart-1: #1f9d80;
+  --chart-2: #4f63e7;
+  --chart-3: #7c5cf0;
+  --chart-4: #c08415;
+  --chart-5: #e25c4f;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #3c4843;
+  --sidebar-primary: #1f9d80;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e7f4ef;
+  --sidebar-accent-foreground: #14745f;
+  --sidebar-border: #e5ebe8;
+  --sidebar-ring: #1f9d80;
+
+  --skeleton-base: #eef2f0;
+  --skeleton-highlight: #f6f9f8;
+
+  --radius: 0.625rem;
+
+  /* TokensRelay runs on the system sans stack (PingFang SC et al.), not Public
+   * Sans. Overriding `--font-sans` here keeps the Font axis functional:
+   * the provider resolves tokensrelay to `sans`, and `[data-theme-font='sans']`
+   * re-points `--font-body` at this stack. */
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', system-ui, sans-serif;
+
+  /* Soft brand washes pinned to the canvas corners (teal top-right,
+   * indigo bottom-left) — the preset attribute lives on <body>, so this
+   * paints the page canvas itself. */
+  background-image:
+    radial-gradient(
+      640px 360px at 86% -8%,
+      rgba(31, 157, 128, 0.07),
+      transparent 64%
+    ),
+    radial-gradient(
+      560px 420px at -6% 104%,
+      rgba(79, 99, 231, 0.05),
+      transparent 60%
+    );
+  background-attachment: fixed;
+}
+.dark [data-theme-preset='tokensrelay'] {
+  /* Deep green-gray night surfaces with a brightened teal accent. */
+  --background: #0d1412;
+  --foreground: #e9f1ed;
+  --card: #151d1a;
+  --card-foreground: #e9f1ed;
+  --popover: #18211e;
+  --popover-foreground: #e9f1ed;
+
+  --primary: #34c39d;
+  --primary-foreground: #0d1412;
+
+  --secondary: #173129;
+  --secondary-foreground: #34c39d;
+
+  --muted: #1d2823;
+  --muted-foreground: #8fa099;
+  --accent: #173129;
+  --accent-foreground: #34c39d;
+
+  --destructive: #f08d80;
+  --destructive-foreground: #0d1412;
+  --success: #4ecf8e;
+  --success-foreground: #0d1412;
+  --warning: #e0a83d;
+  --warning-foreground: #0d1412;
+  --info: #8fa9f5;
+  --info-foreground: #0d1412;
+  --neutral: #6b7c75;
+  --neutral-foreground: #e9f1ed;
+
+  --border: #243029;
+  --input: #243029;
+  --ring: #2fb393;
+
+  --chart-1: #2fb393;
+  --chart-2: #93a3f7;
+  --chart-3: #b59af5;
+  --chart-4: #ddb04a;
+  --chart-5: #ef9186;
+
+  --sidebar: #151d1a;
+  --sidebar-foreground: #c4d0ca;
+  --sidebar-primary: #34c39d;
+  --sidebar-primary-foreground: #0d1412;
+  --sidebar-accent: #173129;
+  --sidebar-accent-foreground: #34c39d;
+  --sidebar-border: #243029;
+  --sidebar-ring: #2fb393;
+
+  --skeleton-base: #1d2823;
+  --skeleton-highlight: #2a382f;
+}
+
+/* TokensRelay signature: primary buttons wear the horizontal teal gradient
+ * (#2aa78a → #15695a). Scoped to button slots carrying `bg-primary` so
+ * switches, badges, and other primary-colored fills stay flat teal as in
+ * the mockups. The gradient layers over `background-color`, so disabled
+ * opacity and focus rings keep working unchanged. */
+[data-theme-preset='tokensrelay'] [data-slot='button'].bg-primary {
+  background-image: linear-gradient(99deg, #2aa78a 0%, #15695a 100%);
+}
+[data-theme-preset='tokensrelay'] [data-slot='button'].bg-primary:hover {
+  background-image: linear-gradient(99deg, #249679 0%, #115c4f 100%);
+}
+.dark [data-theme-preset='tokensrelay'] [data-slot='button'].bg-primary {
+  background-image: linear-gradient(99deg, #2fb393 0%, #177563 100%);
+}
+.dark [data-theme-preset='tokensrelay'] [data-slot='button'].bg-primary:hover {
+  background-image: linear-gradient(99deg, #36c2a0 0%, #1b836f 100%);
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='sidebar-container'] {
+  border-color: var(--sidebar-border);
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='sidebar-inner'] {
+  box-shadow: none;
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='sidebar-group-label'] {
+  color: color-mix(in oklch, var(--sidebar-foreground) 62%, transparent);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='sidebar-menu-button'] {
+  border-radius: 0.625rem;
+  min-height: 2.375rem;
+  color: var(--sidebar-foreground);
+}
+
+[data-theme-preset='tokensrelay']
+  [data-slot='sidebar-menu-button'][data-active='true'] {
+  background: var(--sidebar-accent);
+  color: var(--sidebar-accent-foreground);
+  font-weight: 650;
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='sidebar-footer'] {
+  background: var(--sidebar);
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='card'] {
+  border: 1px solid var(--border);
+  box-shadow:
+    0 1px 2px rgba(21, 32, 28, 0.04),
+    0 4px 16px rgba(21, 32, 28, 0.04);
+}
+
+.dark [data-theme-preset='tokensrelay'] [data-slot='card'] {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='table-header'] {
+  background: color-mix(in oklch, var(--muted) 70%, var(--card));
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='table-head'] {
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='table-row'] {
+  border-color: var(--border);
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='table-row']:hover {
+  background: color-mix(in oklch, var(--accent) 55%, transparent);
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='table-cell'] {
+  color: var(--foreground);
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='sheet-content'],
+[data-theme-preset='tokensrelay'] [data-slot='dialog-content'],
+[data-theme-preset='tokensrelay'] [data-slot='popover-content'],
+[data-theme-preset='tokensrelay'] [data-slot='dropdown-menu-content'] {
+  border-color: var(--border);
+  box-shadow: 0 12px 36px rgba(21, 32, 28, 0.16);
+}
+
+.dark [data-theme-preset='tokensrelay'] [data-slot='sheet-content'],
+.dark [data-theme-preset='tokensrelay'] [data-slot='dialog-content'],
+.dark [data-theme-preset='tokensrelay'] [data-slot='popover-content'],
+.dark [data-theme-preset='tokensrelay'] [data-slot='dropdown-menu-content'] {
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* ── TokensRelay kami paper override ────────────────────────────────────
+ * Current Open Design source: TokensRelay/tokensrelay/css/kami.css.
+ * The project keeps the preset id `tokensrelay` so existing cookies,
+ * i18n labels, and backend defaults continue to work. The visual language
+ * is the kami contract: parchment canvas, ink-blue accent, serif UI,
+ * square 8px surfaces, no gradients, no glass, and print-first light mode.
+ */
+[data-theme-preset='tokensrelay'],
+.dark [data-theme-preset='tokensrelay'] {
+  --tr-bg: #f5f4ed;
+  --tr-surface: #faf9f5;
+  --tr-surface-warm: #e8e6dc;
+  --tr-fg: #141413;
+  --tr-fg-2: #3d3d3a;
+  --tr-muted: #504e49;
+  --tr-meta: #6b6a64;
+  --tr-border: #e8e6dc;
+  --tr-border-soft: #e5e3d8;
+  --tr-accent: #1b365d;
+  --tr-accent-on: #faf9f5;
+  --tr-accent-light: #2d5a8a;
+  --tr-accent-active: #142a48;
+  --tr-success: #4a6b3a;
+  --tr-warn: #8a6b1f;
+  --tr-danger: #8a3a30;
+  --tr-tag-faint: #eef2f7;
+  --tr-tag-soft: #e4ecf5;
+  --tr-tag-base: #d6e1ee;
+  --tr-tag-strong: #d0dce9;
+
+  --background: var(--tr-bg);
+  --foreground: var(--tr-fg);
+  --card: var(--tr-surface);
+  --card-foreground: var(--tr-fg);
+  --popover: var(--tr-surface);
+  --popover-foreground: var(--tr-fg);
+  --primary: var(--tr-accent);
+  --primary-foreground: var(--tr-accent-on);
+  --secondary: var(--tr-surface-warm);
+  --secondary-foreground: var(--tr-fg-2);
+  --muted: var(--tr-surface-warm);
+  --muted-foreground: var(--tr-meta);
+  --accent: var(--tr-tag-soft);
+  --accent-foreground: var(--tr-accent);
+  --destructive: var(--tr-danger);
+  --destructive-foreground: var(--tr-accent-on);
+  --success: var(--tr-success);
+  --success-foreground: var(--tr-accent-on);
+  --warning: var(--tr-warn);
+  --warning-foreground: var(--tr-fg);
+  --info: var(--tr-accent-light);
+  --info-foreground: var(--tr-accent-on);
+  --neutral: var(--tr-meta);
+  --neutral-foreground: var(--tr-fg);
+  --border: var(--tr-border);
+  --input: var(--tr-border);
+  --ring: var(--tr-accent-active);
+  --chart-1: var(--tr-accent);
+  --chart-2: var(--tr-accent-light);
+  --chart-3: var(--tr-fg-2);
+  --chart-4: var(--tr-meta);
+  --chart-5: var(--tr-surface-warm);
+  --sidebar: var(--tr-surface);
+  --sidebar-foreground: var(--tr-fg-2);
+  --sidebar-primary: var(--tr-accent);
+  --sidebar-primary-foreground: var(--tr-accent-on);
+  --sidebar-accent: var(--tr-tag-soft);
+  --sidebar-accent-foreground: var(--tr-accent);
+  --sidebar-border: var(--tr-border);
+  --sidebar-ring: var(--tr-accent-active);
+  --skeleton-base: var(--tr-surface-warm);
+  --skeleton-highlight: var(--tr-surface);
+  --radius: 0.5rem;
+  --font-sans:
+    'TsangerJinKai02', 'Source Han Serif SC', 'Noto Serif CJK SC',
+    'Songti SC', 'STSong', Charter, Georgia, Palatino, serif;
+  --font-serif:
+    'TsangerJinKai02', 'Source Han Serif SC', 'Noto Serif CJK SC',
+    'Songti SC', 'STSong', Charter, Georgia, Palatino, serif;
+  --font-body: var(--font-serif);
+
+  background-image: none;
+  background-attachment: scroll;
+  color: var(--tr-fg);
+  font-variant-numeric: tabular-nums;
+}
+
+[data-theme-preset='tokensrelay'] {
+  color-scheme: light;
+}
+
+[data-theme-preset='tokensrelay'] *,
+[data-theme-preset='tokensrelay'] *::before,
+[data-theme-preset='tokensrelay'] *::after {
+  letter-spacing: 0.35px;
+}
+
+[data-theme-preset='tokensrelay'] code,
+[data-theme-preset='tokensrelay'] kbd,
+[data-theme-preset='tokensrelay'] pre,
+[data-theme-preset='tokensrelay'] samp,
+[data-theme-preset='tokensrelay'] .font-mono {
+  letter-spacing: 0;
+}
+
+[data-theme-preset='tokensrelay'] body,
+body[data-theme-preset='tokensrelay'] {
+  background: var(--tr-bg);
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='button'].bg-primary,
+[data-theme-preset='tokensrelay'] [data-slot='button'].bg-primary:hover,
+.dark [data-theme-preset='tokensrelay'] [data-slot='button'].bg-primary,
+.dark [data-theme-preset='tokensrelay'] [data-slot='button'].bg-primary:hover {
+  background-image: none;
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='button'] {
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  box-shadow: none;
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='button'].bg-primary {
+  box-shadow: 0 0 0 1px var(--tr-accent);
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='button'].bg-primary:hover {
+  box-shadow:
+    0 0 0 1px var(--tr-accent),
+    0 4px 24px rgba(20, 20, 19, 0.05);
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='button']:is(.bg-secondary, .bg-background) {
+  background: var(--tr-surface-warm);
+  box-shadow: 0 0 0 1px var(--tr-border);
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='card'] {
+  border: 1px solid var(--tr-border);
+  border-radius: var(--radius-md);
+  background: var(--tr-surface);
+  box-shadow: none;
+  transition: box-shadow 200ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='card']:hover {
+  box-shadow: 0 4px 24px rgba(20, 20, 19, 0.05);
+}
+
+.dark [data-theme-preset='tokensrelay'] [data-slot='card'] {
+  box-shadow: none;
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='card-title'],
+[data-theme-preset='tokensrelay'] h1,
+[data-theme-preset='tokensrelay'] h2,
+[data-theme-preset='tokensrelay'] h3 {
+  font-family: var(--font-serif);
+  font-weight: 500;
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='table-container'] {
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='table-header'] {
+  background: var(--tr-bg);
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='table-head'] {
+  color: var(--tr-meta);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='table-row'] {
+  border-color: var(--tr-border-soft);
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='table-row']:hover {
+  background: var(--tr-bg);
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='table-cell'] {
+  color: var(--tr-fg);
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='badge'],
+[data-theme-preset='tokensrelay'] [data-slot='status-badge'] {
+  border-radius: var(--radius-sm);
+  background: transparent;
+  box-shadow: 0 0 0 1px currentColor;
+  font-weight: 500;
+}
+
+[data-theme-preset='tokensrelay'] input,
+[data-theme-preset='tokensrelay'] select,
+[data-theme-preset='tokensrelay'] textarea,
+[data-theme-preset='tokensrelay'] [data-slot='input'],
+[data-theme-preset='tokensrelay'] [data-slot='select-trigger'],
+[data-theme-preset='tokensrelay'] [data-slot='textarea'] {
+  border-color: var(--tr-border);
+  border-radius: var(--radius-md);
+  background: var(--tr-surface);
+  color: var(--tr-fg);
+}
+
+[data-theme-preset='tokensrelay'] input:focus,
+[data-theme-preset='tokensrelay'] select:focus,
+[data-theme-preset='tokensrelay'] textarea:focus,
+[data-theme-preset='tokensrelay'] [data-slot='input']:focus,
+[data-theme-preset='tokensrelay'] [data-slot='select-trigger']:focus,
+[data-theme-preset='tokensrelay'] [data-slot='textarea']:focus {
+  border-color: var(--tr-accent);
+  box-shadow: 0 0 0 2px var(--tr-accent-active);
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='sidebar-container'],
+[data-theme-preset='tokensrelay'] [data-slot='sidebar-inner'] {
+  background: var(--tr-surface);
+  border-color: var(--tr-border);
+  box-shadow: none;
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='sidebar-header'] {
+  border-color: var(--tr-border-soft);
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='sidebar-group-label'] {
+  color: var(--tr-meta);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='sidebar-menu-button'] {
+  min-height: 2.625rem;
+  border-radius: var(--radius-md);
+  color: var(--tr-fg-2);
+  font-weight: 500;
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='sidebar-menu-button']:hover {
+  background: var(--tr-bg);
+  color: var(--tr-fg);
+}
+
+[data-theme-preset='tokensrelay']
+  [data-slot='sidebar-menu-button'][data-active='true'] {
+  background: var(--tr-tag-soft);
+  color: var(--tr-accent);
+  font-weight: 500;
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='sidebar-footer'] {
+  border-color: var(--tr-border);
+  background: var(--tr-surface);
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='sheet-content'],
+[data-theme-preset='tokensrelay'] [data-slot='dialog-content'],
+[data-theme-preset='tokensrelay'] [data-slot='popover-content'],
+[data-theme-preset='tokensrelay'] [data-slot='dropdown-menu-content'] {
+  border-color: var(--tr-border);
+  border-radius: var(--radius-lg);
+  background: var(--tr-surface);
+  box-shadow: 0 4px 24px rgba(20, 20, 19, 0.05);
+}
+
+.dark [data-theme-preset='tokensrelay'] [data-slot='sheet-content'],
+.dark [data-theme-preset='tokensrelay'] [data-slot='dialog-content'],
+.dark [data-theme-preset='tokensrelay'] [data-slot='popover-content'],
+.dark [data-theme-preset='tokensrelay'] [data-slot='dropdown-menu-content'] {
+  box-shadow: 0 4px 24px rgba(20, 20, 19, 0.05);
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='tabs-list'],
+[data-theme-preset='tokensrelay'] [role='tablist'] {
+  background: var(--tr-surface-warm);
+  border-radius: var(--radius-md);
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='tabs-trigger'][data-state='active'],
+[data-theme-preset='tokensrelay'] [role='tab'][data-state='active'] {
+  background: var(--tr-surface);
+  color: var(--tr-fg);
+  box-shadow: 0 0 0 1px var(--tr-border);
+}
+
+[data-theme-preset='tokensrelay'] .text-primary {
+  color: var(--tr-accent) !important;
+}
+
+[data-theme-preset='tokensrelay'] .text-muted-foreground {
+  color: var(--tr-meta) !important;
+}
+
+[data-theme-preset='tokensrelay'] .bg-muted,
+[data-theme-preset='tokensrelay'] .bg-muted\/50 {
+  background-color: var(--tr-surface-warm) !important;
+}
+
+[data-theme-preset='tokensrelay'] .ring-border,
+[data-theme-preset='tokensrelay'] .border-border {
+  border-color: var(--tr-border) !important;
+}
+
+[data-theme-preset='tokensrelay'] .tr-home {
+  min-height: 100vh;
+  overflow-x: clip;
+  background: var(--tr-bg);
+  color: var(--tr-fg);
+  font-family: var(--font-serif);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-loading {
+  display: grid;
+  place-items: center;
+  color: var(--tr-meta);
+}
+
+[data-theme-preset='tokensrelay'] .tr-wrap {
+  width: min(1120px, calc(100% - 128px));
+  margin-inline: auto;
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--tr-bg);
+  border-bottom: 1px solid var(--tr-border);
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-nav-inner {
+  display: flex;
+  height: 68px;
+  align-items: center;
+  gap: 28px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--tr-fg);
+  font-family: var(--font-serif);
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-brand svg {
+  color: var(--tr-accent);
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-links {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 26px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-links a {
+  color: var(--tr-fg-2);
+  transition: color 150ms;
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-links a:hover {
+  color: var(--tr-fg);
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-btn {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 0;
+  border-radius: var(--radius-md);
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  transition:
+    box-shadow 200ms cubic-bezier(0.2, 0, 0, 1),
+    background 150ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-btn-primary {
+  background: var(--tr-accent);
+  color: var(--tr-accent-on) !important;
+  box-shadow: 0 0 0 1px var(--tr-accent);
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-btn-primary:hover {
+  box-shadow:
+    0 0 0 1px var(--tr-accent),
+    0 4px 24px rgba(20, 20, 19, 0.05);
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-btn-secondary {
+  background: var(--tr-surface-warm);
+  color: var(--tr-fg-2);
+  box-shadow: 0 0 0 1px var(--tr-border);
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-btn-ghost {
+  background: transparent;
+  color: var(--tr-accent);
+  box-shadow: 0 0 0 1px var(--tr-accent);
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-menu-btn {
+  margin-left: auto;
+  display: none;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--tr-surface);
+  color: var(--tr-fg);
+  box-shadow: 0 0 0 1px var(--tr-border);
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-menu-btn span {
+  width: 18px;
+  height: 1px;
+  background: currentColor;
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-mobile {
+  position: fixed;
+  top: 69px;
+  right: 0;
+  left: 0;
+  z-index: 49;
+  display: none;
+  padding: 8px 16px 20px;
+  background: var(--tr-bg);
+  border-bottom: 1px solid var(--tr-border);
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-mobile.open {
+  display: block;
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-mobile a {
+  display: block;
+  padding: 13px 2px;
+  border-bottom: 1px solid var(--tr-border-soft);
+  color: var(--tr-fg);
+  font-size: 15px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-mobile .tr-home-btn {
+  width: 100%;
+  margin-top: 16px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-hero {
+  padding: 88px 0 72px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-hero-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 520px);
+  align-items: center;
+  gap: 48px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-eyebrow {
+  color: var(--tr-meta);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 1.2px;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+[data-theme-preset='tokensrelay'] .tr-home h1 {
+  margin-top: 20px;
+  font-family: var(--font-serif);
+  font-size: clamp(34px, 4.6vw, 56px);
+  font-weight: 500;
+  line-height: 1.12;
+}
+
+[data-theme-preset='tokensrelay'] .tr-home h1 span,
+[data-theme-preset='tokensrelay'] .tr-section-head p,
+[data-theme-preset='tokensrelay'] .tr-home a:not(.tr-home-btn) {
+  color: var(--tr-accent);
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-slogan {
+  margin-top: 12px;
+  color: var(--tr-meta);
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-lede {
+  max-width: 44ch;
+  margin: 20px 0 28px;
+  color: var(--tr-muted);
+  font-size: 15px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-cta-row.center {
+  justify-content: center;
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-meta {
+  margin-top: 28px;
+  color: var(--tr-meta);
+  font-family:
+    'JetBrains Mono', 'SF Mono', 'Fira Code', Consolas, Monaco, monospace;
+  font-size: 12px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-paper-code {
+  overflow: hidden;
+  border: 1px solid var(--tr-border);
+  border-radius: var(--radius-md);
+  background: var(--tr-surface);
+  box-shadow: 0 4px 24px rgba(20, 20, 19, 0.05);
+}
+
+[data-theme-preset='tokensrelay'] .tr-paper-code-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--tr-border-soft);
+}
+
+[data-theme-preset='tokensrelay'] .tr-paper-code-bar span {
+  color: var(--tr-meta);
+  font-family:
+    'JetBrains Mono', 'SF Mono', 'Fira Code', Consolas, Monaco, monospace;
+  font-size: 12px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-paper-code-body {
+  overflow-x: auto;
+  padding: 20px 20px 24px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-paper-code-body pre {
+  color: var(--tr-fg-2);
+  font-family:
+    'JetBrains Mono', 'SF Mono', 'Fira Code', Consolas, Monaco, monospace;
+  font-size: 12.5px;
+  line-height: 1.55;
+  letter-spacing: 0;
+}
+
+[data-theme-preset='tokensrelay'] .c-key,
+[data-theme-preset='tokensrelay'] .c-prompt {
+  color: var(--tr-accent);
+}
+
+[data-theme-preset='tokensrelay'] .c-str {
+  color: var(--tr-fg-2);
+}
+
+[data-theme-preset='tokensrelay'] .c-dim {
+  color: var(--tr-meta);
+}
+
+[data-theme-preset='tokensrelay'] .c-caret {
+  display: inline-block;
+  width: 7px;
+  height: 13px;
+  vertical-align: -2px;
+  background: var(--tr-surface-warm);
+  box-shadow: 0 0 0 1px var(--tr-border);
+}
+
+[data-theme-preset='tokensrelay'] .tr-copy-btn {
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--tr-accent);
+  box-shadow: 0 0 0 1px var(--tr-accent);
+  padding: 6px 10px;
+  font-family:
+    'JetBrains Mono', 'SF Mono', 'Fira Code', Consolas, Monaco, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1.2px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-copy-btn.ok {
+  color: var(--tr-success);
+  box-shadow: 0 0 0 1px var(--tr-success);
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-section {
+  padding: 72px 0;
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-section-tight {
+  padding-top: 0;
+}
+
+[data-theme-preset='tokensrelay'] .tr-section-head {
+  max-width: 640px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-section-head h2,
+[data-theme-preset='tokensrelay'] .tr-home-final h2 {
+  margin-top: 8px;
+  font-family: var(--font-serif);
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+[data-theme-preset='tokensrelay'] .tr-section-head span {
+  display: block;
+  margin-top: 12px;
+  color: var(--tr-muted);
+  font-size: 15px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-providers-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 48px;
+  align-items: baseline;
+  margin-top: 32px;
+  padding: 28px 0;
+  border-block: 1px solid var(--tr-border);
+}
+
+[data-theme-preset='tokensrelay'] .tr-provider {
+  color: var(--tr-fg-2);
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+[data-theme-preset='tokensrelay'] .tr-provider small {
+  display: block;
+  margin-top: 4px;
+  color: var(--tr-meta);
+  font-family: var(--font-serif);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+[data-theme-preset='tokensrelay'] .tr-providers-note {
+  margin-top: 16px;
+  color: var(--tr-meta);
+  font-size: 12px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-features-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-feature {
+  display: flex;
+  min-height: 250px;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid var(--tr-border);
+  border-radius: var(--radius-md);
+  background: var(--tr-surface);
+  padding: 28px 28px 24px;
+  transition: box-shadow 200ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+[data-theme-preset='tokensrelay'] .tr-feature:hover {
+  box-shadow: 0 4px 24px rgba(20, 20, 19, 0.05);
+}
+
+[data-theme-preset='tokensrelay'] .tr-feature-no {
+  color: var(--tr-meta);
+  font-family:
+    'JetBrains Mono', 'SF Mono', 'Fira Code', Consolas, Monaco, monospace;
+  font-size: 12px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-feature h3 {
+  font-family: var(--font-serif);
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+[data-theme-preset='tokensrelay'] .tr-feature p:not(.tr-feature-no) {
+  color: var(--tr-muted);
+}
+
+[data-theme-preset='tokensrelay'] .tr-feature-stat {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--tr-border-soft);
+  font-size: 12px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-feature-stat span {
+  color: var(--tr-meta);
+}
+
+[data-theme-preset='tokensrelay'] .tr-feature-stat strong {
+  color: var(--tr-fg);
+  font-weight: 500;
+}
+
+[data-theme-preset='tokensrelay'] .tr-setup-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 48px;
+  align-items: start;
+  margin-top: 32px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-step {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 16px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-step + .tr-step {
+  margin-top: 32px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-step > p {
+  color: var(--tr-accent);
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+[data-theme-preset='tokensrelay'] .tr-step h3 {
+  font-family: var(--font-serif);
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+[data-theme-preset='tokensrelay'] .tr-step div div {
+  margin-top: 8px;
+  color: var(--tr-muted);
+}
+
+[data-theme-preset='tokensrelay'] .tr-chip {
+  border-radius: var(--radius-sm);
+  background: var(--tr-surface-warm);
+  color: var(--tr-fg-2);
+  padding: 2px 6px;
+  font-family:
+    'JetBrains Mono', 'SF Mono', 'Fira Code', Consolas, Monaco, monospace;
+  font-size: 12px;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-metrics {
+  border-block: 1px solid var(--tr-border);
+}
+
+[data-theme-preset='tokensrelay'] .tr-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+[data-theme-preset='tokensrelay'] .tr-metric {
+  padding: 32px 20px;
+  text-align: center;
+}
+
+[data-theme-preset='tokensrelay'] .tr-metric + .tr-metric {
+  border-left: 1px solid var(--tr-border-soft);
+}
+
+[data-theme-preset='tokensrelay'] .tr-metric-value {
+  color: var(--tr-accent);
+  font-family: var(--font-serif);
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+[data-theme-preset='tokensrelay'] .tr-metric-value small {
+  margin-left: 2px;
+  color: var(--tr-meta);
+  font-size: 0.5em;
+  font-weight: 400;
+}
+
+[data-theme-preset='tokensrelay'] .tr-metric-label {
+  margin-top: 8px;
+  color: var(--tr-muted);
+  font-size: 12px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-final {
+  text-align: center;
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-final p {
+  margin-top: 16px;
+  color: var(--tr-muted);
+  font-size: 15px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-final .tr-home-cta-row {
+  margin-top: 28px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-home-footer {
+  border-top: 1px solid var(--tr-border);
+  padding: 48px 0 32px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-footer-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  gap: 48px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-footer-grid p {
+  max-width: 30ch;
+  margin-top: 12px;
+  color: var(--tr-muted);
+}
+
+[data-theme-preset='tokensrelay'] .tr-footer-col h4 {
+  margin-bottom: 16px;
+  color: var(--tr-meta);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+[data-theme-preset='tokensrelay'] .tr-footer-col li + li {
+  margin-top: 12px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-footer-col a {
+  color: var(--tr-fg-2) !important;
+}
+
+[data-theme-preset='tokensrelay'] .tr-footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 48px;
+  padding-top: 20px;
+  border-top: 1px solid var(--tr-border-soft);
+  color: var(--tr-meta);
+  font-size: 12px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-footer-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-footer-status i {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--tr-success);
+}
+
+[data-theme-preset='tokensrelay'] .tr-auth {
+  background: var(--tr-bg);
+  color: var(--tr-fg);
+}
+
+[data-theme-preset='tokensrelay'] .tr-auth::before {
+  content: '';
+  position: fixed;
+  inset: 72px 7vw auto auto;
+  width: min(360px, 38vw);
+  height: 1px;
+  background: var(--tr-border);
+}
+
+[data-theme-preset='tokensrelay'] .tr-auth-brand h1 {
+  font-family: var(--font-serif);
+  font-size: 19px;
+  font-weight: 500;
+}
+
+[data-theme-preset='tokensrelay'] .tr-auth-mark {
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-md);
+  background: var(--tr-accent);
+  color: var(--tr-accent-on);
+}
+
+[data-theme-preset='tokensrelay'] .tr-auth-panel {
+  border: 1px solid var(--tr-border);
+  border-radius: var(--radius-md);
+  background: var(--tr-surface);
+  box-shadow: 0 4px 24px rgba(20, 20, 19, 0.05);
+}
+
+[data-theme-preset='tokensrelay'] .tr-auth-panel h2 {
+  font-family: var(--font-serif);
+  font-weight: 500;
+}
+
+[data-theme-preset='tokensrelay'] .tr-public-layout {
+  background: var(--tr-bg);
+}
+
+[data-theme-preset='tokensrelay'] .tr-public-layout > header {
+  position: sticky;
+  background: var(--tr-bg);
+  border-bottom: 1px solid var(--tr-border);
+  pointer-events: auto;
+}
+
+[data-theme-preset='tokensrelay'] .tr-public-layout > header > div {
+  max-width: 1120px !important;
+  padding: 0 32px !important;
+}
+
+[data-theme-preset='tokensrelay'] .tr-public-layout > header nav {
+  height: 68px !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  ring-width: 0 !important;
+}
+
+[data-theme-preset='tokensrelay'] .tr-public-layout > header nav a,
+[data-theme-preset='tokensrelay'] .tr-public-layout > header nav button {
+  font-weight: 500;
+}
+
+[data-theme-preset='tokensrelay'] .tr-public-layout > header nav img {
+  border-radius: var(--radius-md) !important;
+}
+
+[data-theme-preset='tokensrelay'] [data-slot='sidebar-header'] [class*='bg-foreground'],
+[data-theme-preset='tokensrelay'] .tr-auth-mark,
+[data-theme-preset='tokensrelay'] [aria-label='Go to home'] [class*='bg-foreground'] {
+  background: var(--tr-accent) !important;
+  color: var(--tr-accent-on) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+@media (max-width: 979px) {
+  [data-theme-preset='tokensrelay'] .tr-wrap {
+    width: min(1120px, calc(100% - 64px));
+  }
+
+  [data-theme-preset='tokensrelay'] .tr-home-hero {
+    padding: 48px 0;
+  }
+
+  [data-theme-preset='tokensrelay'] .tr-home-hero-inner,
+  [data-theme-preset='tokensrelay'] .tr-setup-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  [data-theme-preset='tokensrelay'] .tr-home-section {
+    padding: 48px 0;
+  }
+}
+
+@media (max-width: 767px) {
+  [data-theme-preset='tokensrelay'] .tr-wrap {
+    width: min(1120px, calc(100% - 32px));
+  }
+
+  [data-theme-preset='tokensrelay'] .tr-home-links {
+    display: none;
+  }
+
+  [data-theme-preset='tokensrelay'] .tr-home-menu-btn {
+    display: inline-flex;
+  }
+
+  [data-theme-preset='tokensrelay'] .tr-home h1 {
+    font-size: clamp(30px, 8.4vw, 46px);
+  }
+
+  [data-theme-preset='tokensrelay'] .tr-features-grid,
+  [data-theme-preset='tokensrelay'] .tr-footer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  [data-theme-preset='tokensrelay'] .tr-metrics-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  [data-theme-preset='tokensrelay'] .tr-metric {
+    padding: 24px 12px;
+  }
+
+  [data-theme-preset='tokensrelay'] .tr-metric:nth-child(3) {
+    border-left: 0;
+  }
+
+  [data-theme-preset='tokensrelay'] .tr-metric:nth-child(n + 3) {
+    border-top: 1px solid var(--tr-border-soft);
+  }
 }
 
 /* ── Font axis ────────────────────────────────────────────────────────────

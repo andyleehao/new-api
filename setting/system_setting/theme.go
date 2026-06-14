@@ -10,7 +10,10 @@ type ThemeSettings struct {
 }
 
 var themeSettings = ThemeSettings{
-	Frontend: "classic",
+	// Serve the modern `default` frontend out of the box — it carries the
+	// TokensRelay brand preset (web/default, data-theme-preset='tokensrelay'). Admins can
+	// still switch back to `classic` in 系统设置 → 主题设置.
+	Frontend: "default",
 }
 
 func init() {

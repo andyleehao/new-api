@@ -18,20 +18,16 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import {
   Activity,
-  Box,
   CreditCard,
   FileText,
-  FlaskConical,
   Key,
   LayoutDashboard,
-  ListTodo,
-  MessageSquare,
   Radio,
-  Settings,
-  Ticket,
   User,
   Users,
   Wallet,
+  Gift,
+  HandCoins,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { type SidebarData } from '@/components/layout/types'
@@ -48,33 +44,12 @@ export function useSidebarData(): SidebarData {
   return {
     navGroups: [
       {
-        id: 'chat',
-        title: t('Chat'),
+        id: 'user',
+        title: t('User Console'),
         items: [
-          {
-            title: t('Playground'),
-            url: '/playground',
-            icon: FlaskConical,
-          },
-          {
-            title: t('Chat'),
-            icon: MessageSquare,
-            type: 'chat-presets',
-          },
-        ],
-      },
-      {
-        id: 'general',
-        title: t('General'),
-        items: [
-          {
-            title: t('Overview'),
-            url: '/dashboard/overview',
-            icon: Activity,
-          },
           {
             title: t('Dashboard'),
-            url: '/dashboard/models',
+            url: '/dashboard/overview',
             icon: LayoutDashboard,
           },
           {
@@ -88,25 +63,32 @@ export function useSidebarData(): SidebarData {
             icon: FileText,
           },
           {
-            title: t('Task Logs'),
-            url: '/usage-logs/task',
-            activeUrls: ['/usage-logs/drawing'],
-            configUrls: ['/usage-logs/drawing', '/usage-logs/task'],
-            icon: ListTodo,
+            title: t('My Subscriptions'),
+            url: '/wallet?section=subscriptions',
+            icon: CreditCard,
           },
-        ],
-      },
-      {
-        id: 'personal',
-        title: t('Personal'),
-        items: [
           {
-            title: t('Wallet'),
-            url: '/wallet',
+            title: t('Recharge / Subscription'),
+            url: '/wallet?section=purchase',
             icon: Wallet,
           },
           {
-            title: t('Profile'),
+            title: t('Order History'),
+            url: '/wallet?section=orders',
+            icon: FileText,
+          },
+          {
+            title: t('Redemption Code'),
+            url: '/wallet?section=redeem',
+            icon: Gift,
+          },
+          {
+            title: t('Referral Rewards'),
+            url: '/wallet?section=affiliate',
+            icon: HandCoins,
+          },
+          {
+            title: t('Profile Settings'),
             url: '/profile',
             icon: User,
           },
@@ -117,35 +99,19 @@ export function useSidebarData(): SidebarData {
         title: t('Admin'),
         items: [
           {
-            title: t('Channels'),
-            url: '/channels',
-            icon: Radio,
+            title: t('Dashboard'),
+            url: '/dashboard/users',
+            icon: Activity,
           },
           {
-            title: t('Models'),
-            url: '/models/metadata',
-            icon: Box,
-          },
-          {
-            title: t('Users'),
+            title: t('User Management'),
             url: '/users',
             icon: Users,
           },
           {
-            title: t('Redemption Codes'),
-            url: '/redemption-codes',
-            icon: Ticket,
-          },
-          {
-            title: t('Subscription Management'),
-            url: '/subscriptions',
-            icon: CreditCard,
-          },
-          {
-            title: t('System Settings'),
-            url: '/system-settings/site',
-            activeUrls: ['/system-settings'],
-            icon: Settings,
+            title: t('Channel Management'),
+            url: '/channels',
+            icon: Radio,
           },
         ],
       },

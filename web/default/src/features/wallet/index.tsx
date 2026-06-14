@@ -17,11 +17,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { useState, useEffect, useCallback, useMemo } from 'react'
+import { FileText, Gift, HandCoins } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { getSelf } from '@/lib/api'
 import { useStatus } from '@/hooks/use-status'
 import { useSystemConfig } from '@/hooks/use-system-config'
 import { SectionPageLayout } from '@/components/layout'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 import { AffiliateRewardsCard } from './components/affiliate-rewards-card'
 import { BillingHistoryDialog } from './components/dialogs/billing-history-dialog'
 import { CreemConfirmDialog } from './components/dialogs/creem-confirm-dialog'
@@ -54,10 +58,19 @@ import type {
 
 interface WalletProps {
   initialShowHistory?: boolean
+  initialSection?: WalletSection
 }
+
+type WalletSection =
+  | 'purchase'
+  | 'orders'
+  | 'redeem'
+  | 'affiliate'
+  | 'subscriptions'
 
 export function Wallet(props: WalletProps) {
   const { t } = useTranslation()
+  const activeSection = props.initialSection ?? 'purchase'
   const [user, setUser] = useState<UserWalletData | null>(null)
   const [userLoading, setUserLoading] = useState(true)
   const [topupAmount, setTopupAmount] = useState(0)
@@ -120,20 +133,28 @@ export function Wallet(props: WalletProps) {
   }, [])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchUser()
   }, [fetchUser])
 
   useEffect(() => {
     if (props.initialShowHistory) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setBillingDialogOpen(true)
       window.history.replaceState({}, '', window.location.pathname)
+      return
     }
-  }, [props.initialShowHistory])
+
+    if (activeSection === 'orders') {
+      setBillingDialogOpen(true)
+    }
+  }, [props.initialShowHistory, activeSection])
 
   // Initialize topup amount when topup info is loaded
   useEffect(() => {
     if (topupInfo && topupAmount === 0) {
       const minTopup = getMinTopupAmount(topupInfo)
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setTopupAmount(minTopup)
 
       // Calculate initial payment amount with default payment type
@@ -257,72 +278,104 @@ export function Wallet(props: WalletProps) {
     []
   )
 
+  const rechargeCard = (
+    <RechargeFormCard
+      topupInfo={topupInfo}
+      presetAmounts={presetAmounts}
+      selectedPreset={selectedPreset}
+      onSelectPreset={handleSelectPreset}
+      topupAmount={topupAmount}
+      onTopupAmountChange={handleTopupAmountChange}
+      paymentAmount={paymentAmount}
+      calculating={calculating}
+      onPaymentMethodSelect={handlePaymentMethodSelect}
+      paymentLoading={paymentLoading}
+      redemptionCode={redemptionCode}
+      onRedemptionCodeChange={setRedemptionCode}
+      onRedeem={handleRedeem}
+      redeeming={redeeming}
+      topupLink={topupInfo?.topup_link}
+      loading={topupLoading}
+      priceRatio={(status?.price as number) || 1}
+      usdExchangeRate={effectiveUsdExchangeRate}
+      onOpenBilling={() => setBillingDialogOpen(true)}
+      creemProducts={topupInfo?.creem_products}
+      enableCreemTopup={topupInfo?.enable_creem_topup}
+      onCreemProductSelect={handleCreemProductSelect}
+      enableWaffoTopup={topupInfo?.enable_waffo_topup}
+      waffoPayMethods={topupInfo?.waffo_pay_methods}
+      waffoMinTopup={topupInfo?.waffo_min_topup}
+      onWaffoMethodSelect={handleWaffoMethodSelect}
+      enableWaffoPancakeTopup={topupInfo?.enable_waffo_pancake_topup}
+    />
+  )
+
+  const subscriptionCard = (
+    <SubscriptionPlansCard
+      topupInfo={topupInfo}
+      onAvailabilityChange={handleSubscriptionAvailabilityChange}
+      userQuota={user?.quota}
+      onPurchaseSuccess={fetchUser}
+    />
+  )
+
+  const affiliateCard = (
+    <AffiliateRewardsCard
+      user={user}
+      affiliateLink={affiliateLink}
+      onTransfer={() => setTransferDialogOpen(true)}
+      complianceConfirmed={topupInfo?.payment_compliance_confirmed !== false}
+      loading={affiliateLoading}
+    />
+  )
+
   return (
     <>
       <SectionPageLayout>
-        <SectionPageLayout.Title>{t('Wallet')}</SectionPageLayout.Title>
+        <SectionPageLayout.Title>{getWalletSectionTitle(activeSection, t)}</SectionPageLayout.Title>
         <SectionPageLayout.Content>
           <div className='mx-auto flex w-full max-w-7xl flex-col gap-4 sm:gap-5'>
             <WalletStatsCard user={user} loading={userLoading} />
 
-            <div
-              className={
-                showSubscriptionPanel
-                  ? 'grid gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)] xl:items-start'
-                  : 'grid gap-4'
-              }
-            >
-              <div id='wallet-add-funds' className='scroll-mt-4'>
-                <RechargeFormCard
-                  topupInfo={topupInfo}
-                  presetAmounts={presetAmounts}
-                  selectedPreset={selectedPreset}
-                  onSelectPreset={handleSelectPreset}
-                  topupAmount={topupAmount}
-                  onTopupAmountChange={handleTopupAmountChange}
-                  paymentAmount={paymentAmount}
-                  calculating={calculating}
-                  onPaymentMethodSelect={handlePaymentMethodSelect}
-                  paymentLoading={paymentLoading}
-                  redemptionCode={redemptionCode}
-                  onRedemptionCodeChange={setRedemptionCode}
-                  onRedeem={handleRedeem}
-                  redeeming={redeeming}
-                  topupLink={topupInfo?.topup_link}
-                  loading={topupLoading}
-                  priceRatio={(status?.price as number) || 1}
-                  usdExchangeRate={effectiveUsdExchangeRate}
-                  onOpenBilling={() => setBillingDialogOpen(true)}
-                  creemProducts={topupInfo?.creem_products}
-                  enableCreemTopup={topupInfo?.enable_creem_topup}
-                  onCreemProductSelect={handleCreemProductSelect}
-                  enableWaffoTopup={topupInfo?.enable_waffo_topup}
-                  waffoPayMethods={topupInfo?.waffo_pay_methods}
-                  waffoMinTopup={topupInfo?.waffo_min_topup}
-                  onWaffoMethodSelect={handleWaffoMethodSelect}
-                  enableWaffoPancakeTopup={
-                    topupInfo?.enable_waffo_pancake_topup
+            {activeSection === 'purchase' && (
+              <>
+                <div
+                  className={
+                    showSubscriptionPanel
+                      ? 'grid gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)] xl:items-start'
+                      : 'grid gap-4'
                   }
-                />
-              </div>
+                >
+                  <div id='wallet-add-funds' className='scroll-mt-4'>
+                    {rechargeCard}
+                  </div>
+                  {subscriptionCard}
+                </div>
+                {affiliateCard}
+              </>
+            )}
 
-              <SubscriptionPlansCard
-                topupInfo={topupInfo}
-                onAvailabilityChange={handleSubscriptionAvailabilityChange}
-                userQuota={user?.quota}
-                onPurchaseSuccess={fetchUser}
+            {activeSection === 'orders' && (
+              <WalletOrdersPanel onOpenBilling={() => setBillingDialogOpen(true)} />
+            )}
+
+            {activeSection === 'redeem' && (
+              <WalletRedeemPanel
+                redemptionCode={redemptionCode}
+                redeeming={redeeming}
+                onRedemptionCodeChange={setRedemptionCode}
+                onRedeem={handleRedeem}
               />
-            </div>
+            )}
 
-            <AffiliateRewardsCard
-              user={user}
-              affiliateLink={affiliateLink}
-              onTransfer={() => setTransferDialogOpen(true)}
-              complianceConfirmed={
-                topupInfo?.payment_compliance_confirmed !== false
-              }
-              loading={affiliateLoading}
-            />
+            {activeSection === 'affiliate' && affiliateCard}
+
+            {activeSection === 'subscriptions' && (
+              <>
+                {subscriptionCard}
+                {!showSubscriptionPanel && <WalletSubscriptionsEmpty />}
+              </>
+            )}
           </div>
         </SectionPageLayout.Content>
       </SectionPageLayout>
@@ -361,5 +414,111 @@ export function Wallet(props: WalletProps) {
         processing={creemProcessing}
       />
     </>
+  )
+}
+
+function getWalletSectionTitle(
+  section: WalletSection,
+  t: (key: string) => string
+) {
+  switch (section) {
+    case 'orders':
+      return t('Order History')
+    case 'redeem':
+      return t('Redemption Code')
+    case 'affiliate':
+      return t('Referral Rewards')
+    case 'subscriptions':
+      return t('My Subscriptions')
+    default:
+      return t('Recharge / Subscription')
+  }
+}
+
+function WalletOrdersPanel(props: { onOpenBilling: () => void }) {
+  const { t } = useTranslation()
+  return (
+    <Card className='overflow-hidden'>
+      <CardHeader>
+        <div className='flex items-center gap-3'>
+          <span className='bg-muted text-muted-foreground flex size-10 items-center justify-center rounded-xl'>
+            <FileText className='size-5' />
+          </span>
+          <div>
+            <CardTitle>{t('Order History')}</CardTitle>
+            <p className='text-muted-foreground mt-1 text-sm'>
+              {t('Review top-up and subscription order records.')}
+            </p>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <Button onClick={props.onOpenBilling}>{t('View Order History')}</Button>
+      </CardContent>
+    </Card>
+  )
+}
+
+function WalletRedeemPanel(props: {
+  redemptionCode: string
+  redeeming: boolean
+  onRedemptionCodeChange: (code: string) => void
+  onRedeem: () => void
+}) {
+  const { t } = useTranslation()
+  return (
+    <Card className='overflow-hidden'>
+      <CardHeader>
+        <div className='flex items-center gap-3'>
+          <span className='bg-muted text-muted-foreground flex size-10 items-center justify-center rounded-xl'>
+            <Gift className='size-5' />
+          </span>
+          <div>
+            <CardTitle>{t('Redemption Code')}</CardTitle>
+            <p className='text-muted-foreground mt-1 text-sm'>
+              {t('Enter a redemption code to add balance or benefits.')}
+            </p>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className='flex flex-col gap-2 sm:flex-row'>
+          <Input
+            value={props.redemptionCode}
+            onChange={(event) =>
+              props.onRedemptionCodeChange(event.target.value)
+            }
+            placeholder={t('Enter redemption code')}
+            className='font-mono'
+          />
+          <Button
+            onClick={props.onRedeem}
+            disabled={!props.redemptionCode || props.redeeming}
+            className='sm:w-auto'
+          >
+            {props.redeeming ? t('Redeeming...') : t('Redeem')}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function WalletSubscriptionsEmpty() {
+  const { t } = useTranslation()
+  return (
+    <Card className='overflow-hidden'>
+      <CardContent className='flex flex-col items-center justify-center px-6 py-14 text-center'>
+        <span className='bg-muted text-muted-foreground flex size-12 items-center justify-center rounded-xl'>
+          <HandCoins className='size-6' />
+        </span>
+        <h3 className='mt-4 text-base font-semibold'>
+          {t('No active subscriptions')}
+        </h3>
+        <p className='text-muted-foreground mt-1 max-w-md text-sm'>
+          {t('You do not have an active subscription plan yet.')}
+        </p>
+      </CardContent>
+    </Card>
   )
 }

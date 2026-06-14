@@ -27,7 +27,7 @@ import { SectionPageLayout } from '@/components/layout'
 import { FadeIn } from '@/components/page-transition'
 import { ModelsChartPreferences } from './components/models/models-chart-preferences'
 import { ModelsFilter } from './components/models/models-filter-dialog'
-import { OverviewDashboard } from './components/overview/overview-dashboard'
+import { TokensRelayOverviewDashboard } from './components/overview/tokensrelay-overview-dashboard'
 import { DEFAULT_TIME_GRANULARITY } from './constants'
 import {
   buildDefaultDashboardFilters,
@@ -245,7 +245,7 @@ export function Dashboard() {
               )}
             </div>
           )}
-          {activeSection === 'overview' && <OverviewDashboard />}
+          {activeSection === 'overview' && <TokensRelayOverviewDashboard />}
           {activeSection === 'models' && (
             <>
               <FadeIn>

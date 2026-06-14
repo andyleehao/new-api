@@ -17,12 +17,23 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { ChevronsLeft, ChevronsRight } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { MOTION_TRANSITION, MOTION_VARIANTS } from '@/lib/motion'
 import { useLayout } from '@/context/layout-provider'
 import { useSidebarView } from '@/hooks/use-sidebar-view'
-import { Sidebar, SidebarContent, SidebarRail } from '@/components/ui/sidebar'
+import { Button } from '@/components/ui/button'
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarRail,
+  useSidebar,
+} from '@/components/ui/sidebar'
 import { NavGroup } from './nav-group'
 import { SidebarViewHeader } from './sidebar-view-header'
+import { SystemBrand } from './system-brand'
 
 /**
  * Application sidebar.
@@ -48,6 +59,9 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible={collapsible} variant={variant}>
+      <SidebarHeader className='border-sidebar-border border-b px-3 py-3'>
+        <SystemBrand variant='sidebar' />
+      </SidebarHeader>
       {view && <SidebarViewHeader view={view} />}
 
       <SidebarContent className='py-2'>
@@ -69,7 +83,34 @@ export function AppSidebar() {
         </AnimatePresence>
       </SidebarContent>
 
+      <TokensRelaySidebarFooter />
       <SidebarRail />
     </Sidebar>
+  )
+}
+
+function TokensRelaySidebarFooter() {
+  const { t } = useTranslation()
+  const { state, toggleSidebar } = useSidebar()
+  const isCollapsed = state === 'collapsed'
+
+  return (
+    <SidebarFooter className='border-sidebar-border border-t p-3'>
+      <Button
+        type='button'
+        variant='ghost'
+        className='text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground h-9 justify-start gap-2 rounded-lg px-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0'
+        onClick={toggleSidebar}
+      >
+        {isCollapsed ? (
+          <ChevronsRight className='size-4' />
+        ) : (
+          <ChevronsLeft className='size-4' />
+        )}
+        <span className='group-data-[collapsible=icon]:hidden'>
+          {t('Collapse')}
+        </span>
+      </Button>
+    </SidebarFooter>
   )
 }

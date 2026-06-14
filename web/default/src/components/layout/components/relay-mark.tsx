@@ -16,24 +16,38 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
+import { type SVGProps } from 'react'
 import { cn } from '@/lib/utils'
-import { SidebarTrigger } from '@/components/ui/sidebar'
 
-type HeaderProps = React.HTMLAttributes<HTMLElement>
-
-export function Header({ className, children, ...props }: HeaderProps) {
+export function RelayMark({
+  className,
+  strokeWidth = 1.8,
+  ...props
+}: SVGProps<SVGSVGElement>) {
   return (
-    <header
-      className={cn(
-        'bg-card/95 supports-[backdrop-filter]:bg-card/85 sticky top-0 z-40 h-[var(--app-header-height,4rem)] w-full shrink-0 border-b backdrop-blur',
-        className
-      )}
+    <svg
+      viewBox='0 0 24 24'
+      fill='none'
+      stroke='currentColor'
+      strokeWidth={strokeWidth}
+      strokeLinecap='round'
+      strokeLinejoin='round'
+      aria-hidden='true'
+      className={cn('size-5', className)}
       {...props}
     >
-      <div className='flex h-full items-center gap-2 px-3 sm:gap-3 sm:px-4'>
-        <SidebarTrigger variant='ghost' className='size-9 rounded-lg lg:hidden' />
-        {children}
-      </div>
-    </header>
+      <rect
+        x='9.4'
+        y='9.4'
+        width='5.2'
+        height='5.2'
+        rx='1.5'
+        transform='rotate(45 12 12)'
+      />
+      <path d='M5.9 12h2.3m7.6 0h2.3' />
+      <circle cx='4.4' cy='12' r='1.5' />
+      <circle cx='19.6' cy='12' r='1.5' />
+      <circle cx='12' cy='12' r='.9' fill='currentColor' stroke='none' />
+    </svg>
   )
 }

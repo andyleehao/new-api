@@ -95,6 +95,7 @@ export function ThemeProvider({
       const nextResolvedTheme = theme === 'system' ? getSystemTheme() : theme
       root.classList.remove('light', 'dark')
       root.classList.add(nextResolvedTheme)
+      root.setAttribute('data-theme', nextResolvedTheme)
       setResolvedTheme(nextResolvedTheme)
     }
 

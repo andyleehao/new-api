@@ -20,6 +20,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth-store'
+import { resolveTokensRelayDisplayName } from '@/lib/tokensrelay-brand'
 import { cn } from '@/lib/utils'
 import { useNotifications } from '@/hooks/use-notifications'
 import { useSystemConfig } from '@/hooks/use-system-config'
@@ -34,6 +35,7 @@ import { ThemeSwitch } from '@/components/theme-switch'
 import { defaultTopNavLinks } from '../config/top-nav.config'
 import type { TopNavLink } from '../types'
 import { HeaderLogo } from './header-logo'
+import { RelayMark } from './relay-mark'
 
 const AUTH_PROMPT_SECONDS = 5
 
@@ -62,7 +64,7 @@ export interface PublicHeaderProps {
 export function PublicHeader(props: PublicHeaderProps) {
   const {
     navLinks = defaultTopNavLinks,
-    showThemeSwitch = true,
+    showThemeSwitch = false,
     showLanguageSwitcher = true,
     logo: customLogo,
     siteName: customSiteName,
@@ -93,7 +95,9 @@ export function PublicHeader(props: PublicHeaderProps) {
 
   const user = auth.user
   const isAuthenticated = !!user
-  const displaySiteName = customSiteName || systemName
+  const displaySiteName =
+    customSiteName || resolveTokensRelayDisplayName(systemName)
+  const useTokensRelayMark = displaySiteName === '智驿 TokensRelay'
   const links = dynamicLinks.length > 0 ? dynamicLinks : navLinks
 
   useEffect(() => {
@@ -198,6 +202,10 @@ export function PublicHeader(props: PublicHeaderProps) {
                   <Skeleton className='size-full rounded-lg' />
                 ) : customLogo ? (
                   customLogo
+                ) : useTokensRelayMark ? (
+                  <span className='bg-primary text-primary-foreground flex size-full items-center justify-center rounded-md'>
+                    <RelayMark className='size-4' strokeWidth={1.7} />
+                  </span>
                 ) : (
                   <HeaderLogo
                     src={systemLogo}

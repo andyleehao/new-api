@@ -115,6 +115,27 @@ function NavBadge({ children }: { children: ReactNode }) {
   return <Badge className='shrink-0 px-1 py-0 text-xs'>{children}</Badge>
 }
 
+function renderSidebarLink(
+  url: NavLink['url'],
+  onClick: () => void,
+  className?: string
+) {
+  if (typeof url === 'string' && url.includes('?')) {
+    const [to, searchString = ''] = url.split('?')
+    const search = Object.fromEntries(new URLSearchParams(searchString))
+    return (
+      <Link
+        to={to}
+        search={search as never}
+        className={className}
+        onClick={onClick}
+      />
+    )
+  }
+
+  return <Link to={url} className={className} onClick={onClick} />
+}
+
 /**
  * Sidebar menu link item
  */
@@ -125,7 +146,7 @@ function SidebarMenuLink({ item, href }: { item: NavLink; href: string }) {
       <SidebarMenuButton
         isActive={checkIsActive(href, item)}
         tooltip={item.title}
-        render={<Link to={item.url} onClick={() => setOpenMobile(false)} />}
+        render={renderSidebarLink(item.url, () => setOpenMobile(false))}
       >
         {item.icon && <item.icon className='shrink-0' />}
         <span className='min-w-0 flex-1 truncate'>{item.title}</span>
@@ -182,7 +203,7 @@ function SidebarMenuCollapsible({
               <SidebarMenuSubButton
                 isActive={checkIsActive(href, subItem)}
                 render={
-                  <Link to={subItem.url} onClick={() => setOpenMobile(false)} />
+                  renderSidebarLink(subItem.url, () => setOpenMobile(false))
                 }
               >
                 {subItem.icon && <subItem.icon className='shrink-0' />}
@@ -234,10 +255,11 @@ function SidebarMenuCollapsedDropdown({
               <DropdownMenuItem
                 key={`${sub.title}-${sub.url}`}
                 render={
-                  <Link
-                    to={sub.url}
-                    className={`${checkIsActive(href, sub) ? 'bg-secondary' : ''}`}
-                  />
+                  renderSidebarLink(
+                    sub.url,
+                    () => undefined,
+                    `${checkIsActive(href, sub) ? 'bg-secondary' : ''}`
+                  )
                 }
               >
                 {sub.icon && <sub.icon />}

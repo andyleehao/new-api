@@ -30,6 +30,14 @@ export const THEME_PRESETS = [
     swatches: ['oklch(0.13 0 0)', 'oklch(0.95 0 0)'],
   },
   {
+    // 智驿 (TokensRelay) kami paper system: parchment canvas with ink-blue as
+    // the single accent. Token source: Open Design project TokensRelay,
+    // tokensrelay/css/kami.css.
+    value: 'tokensrelay',
+    name: 'TokensRelay',
+    swatches: ['#f5f4ed', '#1b365d'],
+  },
+  {
     // Inspired by Anthropic's official brand language: warm cream canvas
     // (#faf9f5) paired with clay/coral (#d97757) as the single accent.
     // Swatches preview the canvas → accent gradient that defines the system.
@@ -116,7 +124,10 @@ export type ThemeCustomization = {
 }
 
 export const DEFAULT_THEME_CUSTOMIZATION: ThemeCustomization = {
-  preset: 'default',
+  // TokensRelay is the system's brand preset — it ships as the out-of-the-box
+  // look. Users can still switch to any other preset; their choice is
+  // persisted in the `theme_preset` cookie.
+  preset: 'tokensrelay',
   font: 'default',
   radius: 'default',
   scale: 'default',
@@ -178,6 +189,7 @@ export const PRESET_DEFAULT_FONT: Partial<
 > = {
   default: 'sans',
   anthropic: 'serif',
+  tokensrelay: 'serif',
 }
 
 /**

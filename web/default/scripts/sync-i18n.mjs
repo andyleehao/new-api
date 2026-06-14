@@ -85,6 +85,7 @@ const BRAND_AND_LITERAL_KEYS = new Set([
   'SunoAPI',
   'Telegram',
   'Tencent',
+  'TokensRelay',
   'TTFT P50',
   'TTFT P95',
   'TTFT P99',
@@ -316,5 +317,4 @@ main().catch((err) => {
   console.error(err)
   process.exitCode = 1
 })
-
 
