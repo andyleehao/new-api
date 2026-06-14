@@ -1776,7 +1776,7 @@ body[data-theme-preset='tokensrelay'] {
   background: var(--tr-border);
 }
 
-[data-theme-preset='tokensrelay'] .tr-auth-brand h1 {
+[data-theme-preset='tokensrelay'] .tr-auth-brand span {
   font-family: var(--font-serif);
   font-size: 19px;
   font-weight: 500;

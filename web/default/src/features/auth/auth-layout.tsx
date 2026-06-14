@@ -37,27 +37,25 @@ export function AuthLayout({ children }: AuthLayoutProps) {
     <div className='tr-auth relative grid min-h-svh max-w-none'>
       <Link
         to='/'
-        className='tr-auth-brand absolute top-4 left-4 z-10 flex items-center gap-2 transition-opacity hover:opacity-80 sm:top-8 sm:left-8'
+        className='tr-home-brand tr-auth-brand absolute top-4 left-4 z-10 inline-flex items-center gap-[9px] transition-opacity hover:opacity-80 sm:top-8 sm:left-8'
       >
-        <div className='tr-auth-mark relative h-8 w-8'>
-          {loading ? (
-            <Skeleton className='absolute inset-0 rounded-full' />
-          ) : useTokensRelayMark ? (
-            <RelayMark className='size-5' strokeWidth={1.7} />
-          ) : logo ? (
-            <img
-              src={logo}
-              alt={t('Logo')}
-              className='h-8 w-8 rounded-md object-cover'
-            />
-          ) : (
-            <RelayMark className='size-5' strokeWidth={1.7} />
-          )}
-        </div>
+        {loading ? (
+          <Skeleton className='h-[22px] w-[22px] rounded-sm' />
+        ) : useTokensRelayMark ? (
+          <RelayMark className='size-[22px]' strokeWidth={1.8} />
+        ) : logo ? (
+          <img
+            src={logo}
+            alt={t('Logo')}
+            className='h-[22px] w-[22px] rounded-sm object-cover'
+          />
+        ) : (
+          <RelayMark className='size-[22px]' strokeWidth={1.8} />
+        )}
         {loading ? (
           <Skeleton className='h-6 w-24' />
         ) : (
-          <h1 className='text-xl font-medium'>{displayName}</h1>
+          <span>{displayName}</span>
         )}
       </Link>
       <div className='container flex items-center pt-16 sm:pt-0'>

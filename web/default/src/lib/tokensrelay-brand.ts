@@ -17,11 +17,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 const TOKENSRELAY_DISPLAY_NAME = '智驿 TokensRelay'
-const UNCUSTOMIZED_SYSTEM_NAMES = new Set(['New API', 'new-api'])
+const TOKENSRELAY_SYSTEM_NAMES = new Set([
+  'New API',
+  'new-api',
+  'TokensRelay',
+  '智驿',
+  TOKENSRELAY_DISPLAY_NAME,
+])
 
 export function resolveTokensRelayDisplayName(name?: string | null) {
   const trimmed = name?.trim()
-  if (!trimmed || UNCUSTOMIZED_SYSTEM_NAMES.has(trimmed)) {
+  if (!trimmed || TOKENSRELAY_SYSTEM_NAMES.has(trimmed)) {
     return TOKENSRELAY_DISPLAY_NAME
   }
   return trimmed
