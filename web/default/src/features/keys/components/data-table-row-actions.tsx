@@ -25,6 +25,7 @@ import {
   PowerOff,
   ExternalLink,
   ArrowRightLeft,
+  Box,
   Copy,
   Link,
   Loader2,
@@ -191,6 +192,20 @@ export function DataTableRowActions<TData>({
 
   return (
     <div className='-ml-1.5 flex items-center gap-1'>
+      <Button
+        variant='outline'
+        size='sm'
+        className='h-7 gap-1.5 px-2 text-xs'
+        onClick={() => {
+          setCurrentRow(apiKey)
+          setOpen('use-key')
+          void resolveRealKey(apiKey.id)
+        }}
+      >
+        <Box className='size-3.5' />
+        <span className='hidden xl:inline'>{t('Use Key')}</span>
+      </Button>
+
       <Tooltip>
         <TooltipTrigger
           render={
@@ -265,6 +280,18 @@ export function DataTableRowActions<TData>({
             </DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={() => {
+              setCurrentRow(apiKey)
+              setOpen('use-key')
+              void resolveRealKey(apiKey.id)
+            }}
+          >
+            {t('Use API Key')}
+            <DropdownMenuShortcut>
+              <Box size={16} />
+            </DropdownMenuShortcut>
+          </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => {
               setCurrentRow(apiKey)

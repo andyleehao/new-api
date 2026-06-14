@@ -33,16 +33,12 @@ import { GroupBadge } from '@/components/group-badge'
 import { StatusBadge } from '@/components/status-badge'
 import { API_KEY_STATUSES } from '../constants'
 import { type ApiKey } from '../types'
-import {
-  ApiKeyCell,
-  ModelLimitsCell,
-  IpRestrictionsCell,
-} from './api-keys-cells'
+import { ApiKeyCell } from './api-keys-cells'
 import { DataTableRowActions } from './data-table-row-actions'
 
-function getQuotaProgressColor(percentage: number): string {
-  if (percentage <= 10) return '[&_[data-slot=progress-indicator]]:bg-rose-500'
-  if (percentage <= 30) return '[&_[data-slot=progress-indicator]]:bg-amber-500'
+function getUsageProgressColor(percentage: number): string {
+  if (percentage >= 90) return '[&_[data-slot=progress-indicator]]:bg-rose-500'
+  if (percentage >= 70) return '[&_[data-slot=progress-indicator]]:bg-amber-500'
   return '[&_[data-slot=progress-indicator]]:bg-emerald-500'
 }
 
@@ -105,88 +101,12 @@ export function useApiKeysColumns(): ColumnDef<ApiKey>[] {
       meta: { mobileTitle: true },
     },
     {
-      accessorKey: 'status',
-      header: t('Status'),
-      cell: ({ row }) => {
-        const statusConfig = API_KEY_STATUSES[row.getValue('status') as number]
-        if (!statusConfig) return null
-        return (
-          <StatusBadge
-            label={t(statusConfig.label)}
-            variant={statusConfig.variant}
-            copyable={false}
-            className='-ml-1.5'
-          />
-        )
-      },
-      filterFn: (row, id, value) => value.includes(String(row.getValue(id))),
-      size: 120,
-      meta: { mobileBadge: true },
-    },
-    {
       id: 'key',
       accessorKey: 'key',
       header: t('API Key'),
       cell: ({ row }) => <ApiKeyCell apiKey={row.original} />,
       enableSorting: false,
       size: 260,
-    },
-    {
-      id: 'quota',
-      accessorKey: 'remain_quota',
-      header: t('Quota'),
-      cell: ({ row }) => {
-        const apiKey = row.original
-        if (apiKey.unlimited_quota) {
-          return (
-            <StatusBadge
-              label={t('Unlimited')}
-              variant='neutral'
-              copyable={false}
-              className='-ml-1.5'
-            />
-          )
-        }
-
-        const used = apiKey.used_quota
-        const remaining = apiKey.remain_quota
-        const total = used + remaining
-        const percentage = total > 0 ? (remaining / total) * 100 : 0
-
-        return (
-          <Tooltip>
-            <TooltipTrigger render={<div className='w-[150px] space-y-1' />}>
-              <div className='flex justify-between text-xs'>
-                <span className='font-medium tabular-nums'>
-                  {formatQuota(remaining)}
-                </span>
-                <span className='text-muted-foreground tabular-nums'>
-                  {formatQuota(total)}
-                </span>
-              </div>
-              <Progress
-                value={percentage}
-                className={cn('h-1.5', getQuotaProgressColor(percentage))}
-              />
-            </TooltipTrigger>
-            <TooltipContent>
-              <div className='space-y-1 text-xs'>
-                <div>
-                  {t('Used:')} {formatQuota(used)}
-                </div>
-                <div>
-                  {t('Remaining:')} {formatQuota(remaining)} (
-                  {percentage.toFixed(1)}%)
-                </div>
-                <div>
-                  {t('Total:')} {formatQuota(total)}
-                </div>
-              </div>
-            </TooltipContent>
-          </Tooltip>
-        )
-      },
-      size: 170,
     },
     {
       accessorKey: 'group',
@@ -229,54 +149,88 @@ export function useApiKeysColumns(): ColumnDef<ApiKey>[] {
       meta: { mobileHidden: true },
     },
     {
-      id: 'model_limits',
-      accessorKey: 'model_limits',
-      header: t('Models'),
-      cell: ({ row }) => <ModelLimitsCell apiKey={row.original} />,
-      enableSorting: false,
-      size: 160,
-      meta: { mobileHidden: true },
-    },
-    {
-      id: 'allow_ips',
-      accessorKey: 'allow_ips',
-      header: t('IP Restriction'),
-      cell: ({ row }) => <IpRestrictionsCell apiKey={row.original} />,
-      enableSorting: false,
-      size: 160,
-      meta: { mobileHidden: true },
-    },
-    {
-      accessorKey: 'created_time',
-      header: t('Created'),
-      cell: ({ row }) => (
-        <span className='text-muted-foreground block truncate font-mono text-xs tabular-nums'>
-          {formatTimestampToDate(row.getValue('created_time'))}
-        </span>
-      ),
-      size: 180,
-      meta: { mobileHidden: true },
-    },
-    {
-      accessorKey: 'accessed_time',
-      header: t('Last Used'),
+      id: 'usage',
+      accessorKey: 'used_quota',
+      header: t('Usage'),
       cell: ({ row }) => {
-        const accessedTime = row.getValue('accessed_time') as number
-        if (!accessedTime) {
-          return <span className='text-muted-foreground text-xs'>-</span>
+        const apiKey = row.original
+        const used = apiKey.used_quota
+
+        if (apiKey.unlimited_quota) {
+          return (
+            <div className='min-w-[150px] space-y-1'>
+              <div className='flex items-center justify-between gap-3 text-xs'>
+                <span className='font-medium tabular-nums'>
+                  {formatQuota(used)}
+                </span>
+                <StatusBadge
+                  label={t('Unlimited')}
+                  variant='neutral'
+                  copyable={false}
+                />
+              </div>
+              <Progress value={100} className='h-1.5' />
+            </div>
+          )
         }
+
+        const remaining = apiKey.remain_quota
+        const total = used + remaining
+        const percentage = total > 0 ? (used / total) * 100 : 0
+
         return (
-          <span className='text-muted-foreground block truncate font-mono text-xs tabular-nums'>
-            {formatTimestampToDate(accessedTime)}
-          </span>
+          <Tooltip>
+            <TooltipTrigger render={<div className='w-[150px] space-y-1' />}>
+              <div className='flex justify-between text-xs'>
+                <span className='font-medium tabular-nums'>
+                  {formatQuota(used)}
+                </span>
+                <span className='text-muted-foreground tabular-nums'>
+                  {formatQuota(total)}
+                </span>
+              </div>
+              <Progress
+                value={percentage}
+                className={cn('h-1.5', getUsageProgressColor(percentage))}
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <div className='space-y-1 text-xs'>
+                <div>
+                  {t('Used:')} {formatQuota(used)}
+                </div>
+                <div>
+                  {t('Remaining:')} {formatQuota(remaining)} (
+                  {(100 - percentage).toFixed(1)}%)
+                </div>
+                <div>
+                  {t('Total:')} {formatQuota(total)}
+                </div>
+              </div>
+            </TooltipContent>
+          </Tooltip>
         )
       },
-      size: 180,
+      size: 170,
+    },
+    {
+      id: 'rate_limit',
+      header: t('Rate Limit'),
+      cell: () => (
+        <StatusBadge
+          label={t('No limit')}
+          variant='neutral'
+          copyable={false}
+          className='-ml-1.5'
+        />
+      ),
+      enableSorting: false,
+      size: 130,
       meta: { mobileHidden: true },
     },
     {
       accessorKey: 'expired_time',
-      header: t('Expires'),
+      header: t('Expiration'),
       cell: ({ row }) => {
         const expiredTime = row.getValue('expired_time') as number
         if (expiredTime === -1) {
@@ -305,11 +259,58 @@ export function useApiKeysColumns(): ColumnDef<ApiKey>[] {
       meta: { mobileHidden: true },
     },
     {
+      accessorKey: 'status',
+      header: t('Status'),
+      cell: ({ row }) => {
+        const statusConfig = API_KEY_STATUSES[row.getValue('status') as number]
+        if (!statusConfig) return null
+        return (
+          <StatusBadge
+            label={t(statusConfig.label)}
+            variant={statusConfig.variant}
+            copyable={false}
+            className='-ml-1.5'
+          />
+        )
+      },
+      filterFn: (row, id, value) => value.includes(String(row.getValue(id))),
+      size: 120,
+      meta: { mobileBadge: true },
+    },
+    {
+      accessorKey: 'accessed_time',
+      header: t('Last Used'),
+      cell: ({ row }) => {
+        const accessedTime = row.getValue('accessed_time') as number
+        if (!accessedTime) {
+          return <span className='text-muted-foreground text-xs'>-</span>
+        }
+        return (
+          <span className='text-muted-foreground block truncate font-mono text-xs tabular-nums'>
+            {formatTimestampToDate(accessedTime)}
+          </span>
+        )
+      },
+      size: 180,
+      meta: { mobileHidden: true },
+    },
+    {
+      accessorKey: 'created_time',
+      header: t('Created'),
+      cell: ({ row }) => (
+        <span className='text-muted-foreground block truncate font-mono text-xs tabular-nums'>
+          {formatTimestampToDate(row.getValue('created_time'))}
+        </span>
+      ),
+      size: 180,
+      meta: { mobileHidden: true },
+    },
+    {
       id: 'actions',
       header: () => t('Actions'),
       cell: ({ row }) => <DataTableRowActions row={row} />,
       meta: { pinned: 'right' as const },
-      size: 88,
+      size: 170,
     },
   ]
 }
