@@ -3,6 +3,7 @@ package router
 import (
 	"embed"
 	"net/http"
+	"path/filepath"
 	"strings"
 
 	"github.com/QuantumNous/new-api/common"
@@ -32,8 +33,14 @@ func SetWebRouter(router *gin.Engine, assets ThemeAssets) {
 	router.Use(static.Serve("/", themeFS))
 	router.NoRoute(func(c *gin.Context) {
 		c.Set(middleware.RouteTagKey, "web")
+		requestPath := c.Request.URL.Path
 		if strings.HasPrefix(c.Request.RequestURI, "/v1") || strings.HasPrefix(c.Request.RequestURI, "/api") || strings.HasPrefix(c.Request.RequestURI, "/assets") {
 			controller.RelayNotFound(c)
+			return
+		}
+		if isFrontendAssetRequest(requestPath) {
+			c.Header("Cache-Control", "no-cache")
+			c.Status(http.StatusNotFound)
 			return
 		}
 		c.Header("Cache-Control", "no-cache")
@@ -43,4 +50,18 @@ func SetWebRouter(router *gin.Engine, assets ThemeAssets) {
 			c.Data(http.StatusOK, "text/html; charset=utf-8", assets.DefaultIndexPage)
 		}
 	})
+}
+
+func isFrontendAssetRequest(path string) bool {
+	if strings.HasPrefix(path, "/static/") {
+		return true
+	}
+
+	ext := strings.ToLower(filepath.Ext(path))
+	switch ext {
+	case ".css", ".js", ".mjs", ".map", ".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".ico", ".json", ".txt", ".xml", ".webmanifest", ".woff", ".woff2", ".ttf", ".otf", ".eot", ".wasm":
+		return true
+	default:
+		return false
+	}
 }
