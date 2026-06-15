@@ -25,6 +25,7 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { getUserModels, getUserGroups } from '@/lib/api'
 import { getCurrencyDisplay, getCurrencyLabel } from '@/lib/currency'
+import dayjs from '@/lib/dayjs'
 import { cn } from '@/lib/utils'
 import { useStatus } from '@/hooks/use-status'
 import { Button } from '@/components/ui/button'
@@ -106,6 +107,8 @@ export function ApiKeysMutateDrawer({
   const { status } = useStatus()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [advancedOpen, setAdvancedOpen] = useState(false)
+  const [expirationOpen, setExpirationOpen] = useState(false)
+  const [customExpirationOpen, setCustomExpirationOpen] = useState(false)
   const defaultUseAutoGroup = status?.default_use_auto_group === true
 
   // Fetch models
@@ -230,18 +233,24 @@ export function ApiKeysMutateDrawer({
     toast.error(t('Please fix the highlighted fields before saving'))
   }
 
-  const handleSetExpiry = (months: number, days: number, hours: number) => {
-    if (months === 0 && days === 0 && hours === 0) {
-      form.setValue('expired_time', undefined)
-      return
-    }
-
+  const handleSetExpiryDays = (days: number) => {
     const now = new Date()
-    now.setMonth(now.getMonth() + months)
     now.setDate(now.getDate() + days)
-    now.setHours(now.getHours() + hours)
+    form.setValue('expired_time', now, {
+      shouldDirty: true,
+      shouldValidate: true,
+    })
+    setExpirationOpen(false)
+    setCustomExpirationOpen(false)
+  }
 
-    form.setValue('expired_time', now)
+  const handleClearExpiry = () => {
+    form.setValue('expired_time', undefined, {
+      shouldDirty: true,
+      shouldValidate: true,
+    })
+    setExpirationOpen(false)
+    setCustomExpirationOpen(false)
   }
 
   const { meta: currencyMeta } = getCurrencyDisplay()
@@ -259,6 +268,8 @@ export function ApiKeysMutateDrawer({
     if (!v) {
       form.reset()
       setAdvancedOpen(false)
+      setExpirationOpen(false)
+      setCustomExpirationOpen(false)
     }
   }
 
@@ -314,6 +325,7 @@ export function ApiKeysMutateDrawer({
                       value={field.value}
                       onValueChange={field.onChange}
                       placeholder={t('Select a group')}
+                      compact={!isUpdate}
                     />
                   </FormControl>
                   <FormMessage />
@@ -358,56 +370,94 @@ export function ApiKeysMutateDrawer({
               control={form.control}
               name='expired_time'
               render={({ field }) => (
-                <FormItem>
+                <FormItem className='tr-key-expiry-field'>
                   <FormLabel>{t('Expiration Time')}</FormLabel>
-                  <div className='grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center'>
-                    <FormControl>
-                      <DateTimePicker
-                        value={field.value}
-                        onChange={field.onChange}
-                        placeholder={t('Never expires')}
-                        className='min-w-0 [&_input[type=time]]:w-24 sm:[&_input[type=time]]:w-32'
-                      />
-                    </FormControl>
-                    <div className='grid grid-cols-4 gap-2 sm:flex'>
-                      <Button
-                        type='button'
-                        variant='outline'
-                        size='sm'
-                        className='px-2 text-xs sm:px-3 sm:text-sm'
-                        onClick={() => handleSetExpiry(0, 0, 0)}
-                      >
-                        {t('Never')}
-                      </Button>
-                      <Button
-                        type='button'
-                        variant='outline'
-                        size='sm'
-                        className='px-2 text-xs sm:px-3 sm:text-sm'
-                        onClick={() => handleSetExpiry(1, 0, 0)}
-                      >
-                        {t('1 Month')}
-                      </Button>
-                      <Button
-                        type='button'
-                        variant='outline'
-                        size='sm'
-                        className='px-2 text-xs sm:px-3 sm:text-sm'
-                        onClick={() => handleSetExpiry(0, 1, 0)}
-                      >
-                        {t('1 Day')}
-                      </Button>
-                      <Button
-                        type='button'
-                        variant='outline'
-                        size='sm'
-                        className='px-2 text-xs sm:px-3 sm:text-sm'
-                        onClick={() => handleSetExpiry(0, 0, 1)}
-                      >
-                        {t('1 Hour')}
-                      </Button>
+                  <button
+                    type='button'
+                    className={cn(
+                      'tr-key-expiry-trigger',
+                      expirationOpen && 'is-open'
+                    )}
+                    aria-expanded={expirationOpen}
+                    onClick={() => setExpirationOpen((value) => !value)}
+                  >
+                    <span>
+                      {field.value
+                        ? dayjs(field.value).format('YYYY-MM-DD HH:mm')
+                        : t('Never expires')}
+                    </span>
+                    <ChevronDown
+                      className={cn(
+                        'size-4 transition-transform',
+                        expirationOpen && 'rotate-180'
+                      )}
+                    />
+                  </button>
+
+                  {expirationOpen && (
+                    <div className='tr-key-expiry-panel'>
+                      <div className='tr-key-expiry-options'>
+                        <Button
+                          type='button'
+                          variant='outline'
+                          size='sm'
+                          onClick={() => handleSetExpiryDays(7)}
+                        >
+                          {t('7 Days')}
+                        </Button>
+                        <Button
+                          type='button'
+                          variant='outline'
+                          size='sm'
+                          onClick={() => handleSetExpiryDays(30)}
+                        >
+                          {t('30 Days')}
+                        </Button>
+                        <Button
+                          type='button'
+                          variant='outline'
+                          size='sm'
+                          onClick={() => handleSetExpiryDays(90)}
+                        >
+                          {t('90 Days')}
+                        </Button>
+                        <Button
+                          type='button'
+                          variant='outline'
+                          size='sm'
+                          data-active={customExpirationOpen}
+                          onClick={() =>
+                            setCustomExpirationOpen((value) => !value)
+                          }
+                        >
+                          {t('Custom')}
+                        </Button>
+                      </div>
+
+                      {customExpirationOpen && (
+                        <FormControl>
+                          <DateTimePicker
+                            value={field.value}
+                            onChange={field.onChange}
+                            placeholder={t('Never expires')}
+                            className='tr-key-expiry-custom min-w-0'
+                          />
+                        </FormControl>
+                      )}
+
+                      {field.value && (
+                        <Button
+                          type='button'
+                          variant='ghost'
+                          size='sm'
+                          className='tr-key-expiry-clear'
+                          onClick={handleClearExpiry}
+                        >
+                          {t('Never expires')}
+                        </Button>
+                      )}
                     </div>
-                  </div>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}
@@ -447,12 +497,31 @@ export function ApiKeysMutateDrawer({
         <SideDrawerSection
           className={isUpdate ? undefined : 'tr-key-create-section'}
         >
-          <SideDrawerSectionHeader
-            className={isUpdate ? undefined : 'tr-key-create-section-head'}
-            title={t('Quota Settings')}
-            description={t('Set quota amount and limits')}
-            icon={<WalletCards className='size-4' />}
-          />
+          <div className='tr-key-quota-head'>
+            <SideDrawerSectionHeader
+              className={isUpdate ? undefined : 'tr-key-create-section-head'}
+              title={t('Quota Settings')}
+              description={t('Set quota amount and limits')}
+              icon={<WalletCards className='size-4' />}
+            />
+            <FormField
+              control={form.control}
+              name='unlimited_quota'
+              render={({ field }) => (
+                <FormItem className='tr-key-quota-toggle'>
+                  <FormLabel className='text-sm'>
+                    {t('Enable')} {t('Quota')}
+                  </FormLabel>
+                  <FormControl>
+                    <Switch
+                      checked={!field.value}
+                      onCheckedChange={(checked) => field.onChange(!checked)}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
           {!unlimitedQuota && (
             <FormField
               control={form.control}
@@ -483,33 +552,6 @@ export function ApiKeysMutateDrawer({
               )}
             />
           )}
-
-          <FormField
-            control={form.control}
-            name='unlimited_quota'
-            render={({ field }) => (
-              <FormItem
-                className={sideDrawerSwitchItemClassName(
-                  isUpdate ? undefined : 'tr-key-create-switch'
-                )}
-              >
-                <div className='flex flex-col gap-0.5'>
-                  <FormLabel className='text-sm'>
-                    {t('Unlimited Quota')}
-                  </FormLabel>
-                  <FormDescription className='text-xs'>
-                    {t('Enable unlimited quota for this API key')}
-                  </FormDescription>
-                </div>
-                <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
         </SideDrawerSection>
 
         <Collapsible open={advancedOpen} onOpenChange={setAdvancedOpen}>
@@ -559,9 +601,7 @@ export function ApiKeysMutateDrawer({
                           }))}
                           selected={field.value}
                           onChange={field.onChange}
-                          placeholder={t(
-                            'Select models (empty for allow all)'
-                          )}
+                          placeholder={t('Select models (empty for allow all)')}
                         />
                       </FormControl>
                       <FormDescription>
