@@ -2051,6 +2051,10 @@ body[data-theme-preset='tokensrelay'] {
   background: color-mix(in srgb, var(--tr-fg) 16%, transparent);
 }
 
+[data-theme-preset='tokensrelay'] [data-slot='dialog-content'] {
+  z-index: 90;
+}
+
 [data-theme-preset='tokensrelay']
   .tr-key-create-dialog
   [data-slot='dialog-close'] {
@@ -2371,45 +2375,64 @@ body[data-theme-preset='tokensrelay'] {
 }
 
 [data-theme-preset='tokensrelay'] .tr-key-actions-header {
-  padding-left: 38px;
+  padding-inline: 14px 10px;
   background: var(--tr-bg) !important;
   color: var(--tr-fg-2);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
 }
 
 [data-theme-preset='tokensrelay'] .tr-key-actions-cell {
+  overflow: hidden;
+  padding-inline: 10px 8px;
   background: var(--tr-surface) !important;
 }
 
 [data-theme-preset='tokensrelay'] .tr-key-row-actions {
   display: grid;
-  grid-template-columns: repeat(5, minmax(54px, 1fr));
+  width: min(364px, 100%);
+  grid-template-columns:
+    minmax(0, 1.36fr) minmax(0, 1.47fr) minmax(0, 0.84fr)
+    minmax(0, 0.82fr) minmax(0, 0.85fr);
   align-items: stretch;
-  gap: 6px;
-  min-width: 294px;
+  justify-content: end;
+  margin-left: auto;
+  gap: 2px;
+  min-width: 0;
 }
 
 [data-theme-preset='tokensrelay'] .tr-key-action-button {
   display: flex;
-  height: 62px;
+  width: 100%;
+  max-width: 100%;
+  height: 32px;
   min-width: 0;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 7px 4px;
+  gap: 3px;
+  overflow: hidden;
+  padding: 0 2px;
   border-radius: var(--radius-md);
   color: var(--tr-meta);
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 400;
-  line-height: 1.1;
-  white-space: normal;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+[data-theme-preset='tokensrelay'] .tr-key-action-button span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1;
 }
 
 [data-theme-preset='tokensrelay'] .tr-key-action-button svg {
-  width: 22px;
-  height: 22px;
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
   stroke-width: 1.8;
 }
 
@@ -2677,20 +2700,24 @@ body[data-theme-preset='tokensrelay'] {
   }
 
   [data-theme-preset='tokensrelay'] .tr-key-row-actions {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    width: 100%;
+    grid-template-columns:
+      minmax(0, 1.36fr) minmax(0, 1.47fr) minmax(0, 0.84fr)
+      minmax(0, 0.82fr) minmax(0, 0.85fr);
     min-width: 0;
-    gap: 4px;
+    gap: 2px;
   }
 
   [data-theme-preset='tokensrelay'] .tr-key-action-button {
-    height: 56px;
-    gap: 5px;
-    font-size: 12px;
+    height: 32px;
+    gap: 3px;
+    padding-inline: 2px;
+    font-size: 11px;
   }
 
   [data-theme-preset='tokensrelay'] .tr-key-action-button svg {
-    width: 20px;
-    height: 20px;
+    width: 14px;
+    height: 14px;
   }
 }
 
