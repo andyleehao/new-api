@@ -154,8 +154,9 @@ function ApiKeysMobileList({
               <div className='min-w-0 flex-1 [&_button:first-child]:max-w-full [&_button:first-child]:truncate [&_button:first-child]:px-0'>
                 <ApiKeyCell apiKey={apiKey} />
               </div>
-              <DataTableRowActions row={row} />
             </div>
+
+            <DataTableRowActions row={row} />
 
             <div className='flex items-center justify-between gap-2 text-xs'>
               <span className='text-muted-foreground'>{t('Quota')}</span>
@@ -312,6 +313,12 @@ export function ApiKeysTable() {
         isDisabledApiKeyRow(row.original) ? DISABLED_ROW_DESKTOP : undefined
       }
       bulkActions={<DataTableBulkActions table={table} />}
+      getColumnClassName={(columnId, kind) => {
+        if (columnId !== 'actions') return undefined
+        return kind === 'header'
+          ? 'tr-key-actions-header'
+          : 'tr-key-actions-cell'
+      }}
     />
   )
 }

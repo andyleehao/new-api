@@ -2287,6 +2287,10 @@ body[data-theme-preset='tokensrelay'] {
   gap: 8px;
 }
 
+[data-theme-preset='tokensrelay'] .tr-key-expiry-date-only {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 [data-theme-preset='tokensrelay'] .tr-key-expiry-custom [data-slot='button'],
 [data-theme-preset='tokensrelay'] .tr-key-expiry-custom [data-slot='input'] {
   min-height: 38px;
@@ -2336,6 +2340,87 @@ body[data-theme-preset='tokensrelay'] {
   > span {
   background: var(--tr-surface-warm);
   color: var(--tr-fg-2);
+}
+
+[data-theme-preset='tokensrelay'] .tr-key-model-select-content {
+  z-index: 120;
+}
+
+[data-theme-preset='tokensrelay'] .tr-key-model-select-item {
+  color: var(--tr-fg-2);
+}
+
+[data-theme-preset='tokensrelay'] .tr-key-model-select-item[data-highlighted] {
+  background: var(--tr-bg);
+  color: var(--tr-fg);
+}
+
+[data-theme-preset='tokensrelay']
+  .tr-key-model-select-item[aria-selected='true'],
+[data-theme-preset='tokensrelay'] .tr-key-model-select-item[data-checked] {
+  background: var(--tr-tag-faint);
+  color: var(--tr-accent);
+}
+
+[data-theme-preset='tokensrelay']
+  .tr-key-model-select-item[aria-selected='true'][data-highlighted],
+[data-theme-preset='tokensrelay']
+  .tr-key-model-select-item[data-checked][data-highlighted] {
+  background: var(--tr-tag-soft);
+  color: var(--tr-accent);
+}
+
+[data-theme-preset='tokensrelay'] .tr-key-actions-header {
+  padding-left: 38px;
+  background: var(--tr-bg) !important;
+  color: var(--tr-fg-2);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+[data-theme-preset='tokensrelay'] .tr-key-actions-cell {
+  background: var(--tr-surface) !important;
+}
+
+[data-theme-preset='tokensrelay'] .tr-key-row-actions {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(54px, 1fr));
+  align-items: stretch;
+  gap: 6px;
+  min-width: 294px;
+}
+
+[data-theme-preset='tokensrelay'] .tr-key-action-button {
+  display: flex;
+  height: 62px;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 4px;
+  border-radius: var(--radius-md);
+  color: var(--tr-meta);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.1;
+  white-space: normal;
+}
+
+[data-theme-preset='tokensrelay'] .tr-key-action-button svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 1.8;
+}
+
+[data-theme-preset='tokensrelay'] .tr-key-action-button:hover {
+  background: var(--tr-tag-faint);
+  color: var(--tr-fg-2);
+}
+
+[data-theme-preset='tokensrelay'] .tr-key-action-button-danger:hover {
+  background: color-mix(in srgb, var(--destructive) 10%, transparent);
+  color: var(--destructive);
 }
 
 [data-theme-preset='tokensrelay'] .tr-pricing-kami {
@@ -2589,6 +2674,23 @@ body[data-theme-preset='tokensrelay'] {
 
   [data-theme-preset='tokensrelay'] .tr-key-quota-head {
     align-items: center;
+  }
+
+  [data-theme-preset='tokensrelay'] .tr-key-row-actions {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    min-width: 0;
+    gap: 4px;
+  }
+
+  [data-theme-preset='tokensrelay'] .tr-key-action-button {
+    height: 56px;
+    gap: 5px;
+    font-size: 12px;
+  }
+
+  [data-theme-preset='tokensrelay'] .tr-key-action-button svg {
+    width: 20px;
+    height: 20px;
   }
 }
 

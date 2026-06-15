@@ -40,11 +40,21 @@ const calendarLocales = {
   vi,
 } as const
 
+function formatTime(date: Date | undefined, fallback: string) {
+  if (!date) return fallback
+  const hours = date.getHours().toString().padStart(2, '0')
+  const minutes = date.getMinutes().toString().padStart(2, '0')
+  return `${hours}:${minutes}`
+}
+
 interface DateTimePickerProps {
   value?: Date
   onChange?: (date: Date | undefined) => void
   placeholder?: string
   className?: string
+  showTime?: boolean
+  showClear?: boolean
+  useCurrentTimeOnSelect?: boolean
 }
 
 export function DateTimePicker({
@@ -52,37 +62,46 @@ export function DateTimePicker({
   onChange,
   placeholder,
   className,
+  showTime = true,
+  showClear = true,
+  useCurrentTimeOnSelect = false,
 }: DateTimePickerProps) {
   const { t, i18n } = useTranslation()
   const placeholderText = placeholder ?? t('Select date')
   const calendarLocale =
     calendarLocales[i18n.language as keyof typeof calendarLocales] ?? enUS
   const [open, setOpen] = React.useState(false)
-  const [date, setDate] = React.useState<Date | undefined>(value)
   const [month, setMonth] = React.useState<Date | undefined>(value)
-  const [time, setTime] = React.useState<string>('00:00')
+  const time = formatTime(
+    value,
+    useCurrentTimeOnSelect ? formatTime(new Date(), '00:00') : '00:00'
+  )
 
-  React.useEffect(() => {
-    setDate(value)
-    setMonth(value)
-    if (value) {
-      const hours = value.getHours().toString().padStart(2, '0')
-      const minutes = value.getMinutes().toString().padStart(2, '0')
-      setTime(`${hours}:${minutes}`)
+  const handleOpenChange = (nextOpen: boolean) => {
+    setOpen(nextOpen)
+    if (nextOpen) {
+      setMonth(value ?? new Date())
     }
-  }, [value])
+  }
 
   const handleDateSelect = (selectedDate: Date | undefined) => {
     if (selectedDate) {
-      const [hours, minutes] = time.split(':').map(Number)
+      const currentTime = new Date()
+      const [hours, minutes] = showTime
+        ? time.split(':').map(Number)
+        : useCurrentTimeOnSelect
+          ? [currentTime.getHours(), currentTime.getMinutes()]
+          : [0, 0]
+      const seconds =
+        showTime || !useCurrentTimeOnSelect ? 0 : currentTime.getSeconds()
+      const milliseconds =
+        showTime || !useCurrentTimeOnSelect ? 0 : currentTime.getMilliseconds()
       const newDate = new Date(selectedDate)
-      newDate.setHours(hours, minutes, 0, 0)
-      setDate(newDate)
+      newDate.setHours(hours, minutes, seconds, milliseconds)
       setMonth(newDate)
       onChange?.(newDate)
       setOpen(false)
     } else {
-      setDate(undefined)
       setMonth(undefined)
       onChange?.(undefined)
     }
@@ -90,45 +109,41 @@ export function DateTimePicker({
 
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = e.target.value
-    setTime(newTime)
 
-    if (date) {
+    if (value) {
       const [hours, minutes] = newTime.split(':').map(Number)
-      const newDate = new Date(date)
+      const newDate = new Date(value)
       newDate.setHours(hours, minutes, 0, 0)
-      setDate(newDate)
       onChange?.(newDate)
     }
   }
 
   const handleClear = () => {
-    setDate(undefined)
     setMonth(undefined)
-    setTime('00:00')
     onChange?.(undefined)
   }
 
   return (
     <div className={cn('flex gap-2', className)}>
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover open={open} onOpenChange={handleOpenChange}>
         <PopoverTrigger
           render={
             <Button
               variant='outline'
               className={cn(
                 'flex-1 justify-between font-normal',
-                !date && 'text-muted-foreground'
+                !value && 'text-muted-foreground'
               )}
             />
           }
         >
-          {date ? dayjs(date).format('YYYY-MM-DD') : placeholderText}
+          {value ? dayjs(value).format('YYYY-MM-DD') : placeholderText}
           <ChevronDownIcon className='h-4 w-4 opacity-50' />
         </PopoverTrigger>
         <PopoverContent className='w-auto overflow-hidden p-0' align='start'>
           <Calendar
             mode='single'
-            selected={date}
+            selected={value}
             month={month}
             onMonthChange={setMonth}
             captionLayout='dropdown'
@@ -137,14 +152,16 @@ export function DateTimePicker({
           />
         </PopoverContent>
       </Popover>
-      <Input
-        type='time'
-        value={time}
-        onChange={handleTimeChange}
-        className='w-32 appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
-        disabled={!date}
-      />
-      {date && (
+      {showTime && (
+        <Input
+          type='time'
+          value={time}
+          onChange={handleTimeChange}
+          className='w-32 appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
+          disabled={!value}
+        />
+      )}
+      {showClear && value && (
         <Button
           type='button'
           variant='outline'

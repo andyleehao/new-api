@@ -52,25 +52,12 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { DateTimePicker } from '@/components/datetime-picker'
 import {
   SideDrawerSection,
   SideDrawerSectionHeader,
-  sideDrawerContentClassName,
-  sideDrawerFooterClassName,
-  sideDrawerFormClassName,
-  sideDrawerHeaderClassName,
   sideDrawerSwitchItemClassName,
 } from '@/components/drawer-layout'
 import { MultiSelect } from '@/components/multi-select'
@@ -278,9 +265,7 @@ export function ApiKeysMutateDrawer({
       <form
         id='api-key-form'
         onSubmit={form.handleSubmit(onSubmit, onInvalid)}
-        className={
-          isUpdate ? sideDrawerFormClassName('gap-5') : 'tr-key-create-form'
-        }
+        className='tr-key-create-form'
       >
         {!isUpdate && (
           <div className='tr-key-create-preview' aria-hidden='true'>
@@ -289,16 +274,14 @@ export function ApiKeysMutateDrawer({
           </div>
         )}
 
-        <SideDrawerSection
-          className={isUpdate ? undefined : 'tr-key-create-section'}
-        >
+        <SideDrawerSection className='tr-key-create-section'>
           <SideDrawerSectionHeader
-            className={isUpdate ? undefined : 'tr-key-create-section-head'}
+            className='tr-key-create-section-head'
             title={t('Basic Information')}
             description={t('Set API key basic information')}
             icon={<KeyRound className='size-4' />}
           />
-          <div className={isUpdate ? undefined : 'tr-key-create-grid'}>
+          <div className='tr-key-create-grid'>
             <FormField
               control={form.control}
               name='name'
@@ -325,7 +308,7 @@ export function ApiKeysMutateDrawer({
                       value={field.value}
                       onValueChange={field.onChange}
                       placeholder={t('Select a group')}
-                      compact={!isUpdate}
+                      compact
                     />
                   </FormControl>
                   <FormMessage />
@@ -341,7 +324,7 @@ export function ApiKeysMutateDrawer({
               render={({ field }) => (
                 <FormItem
                   className={sideDrawerSwitchItemClassName(
-                    isUpdate ? undefined : 'tr-key-create-switch'
+                    'tr-key-create-switch'
                   )}
                 >
                   <div className='flex flex-col gap-0.5'>
@@ -365,7 +348,7 @@ export function ApiKeysMutateDrawer({
             />
           )}
 
-          <div className={isUpdate ? undefined : 'tr-key-create-grid'}>
+          <div className='tr-key-create-grid'>
             <FormField
               control={form.control}
               name='expired_time'
@@ -438,9 +421,18 @@ export function ApiKeysMutateDrawer({
                         <FormControl>
                           <DateTimePicker
                             value={field.value}
-                            onChange={field.onChange}
-                            placeholder={t('Never expires')}
-                            className='tr-key-expiry-custom min-w-0'
+                            onChange={(date) => {
+                              field.onChange(date)
+                              if (date) {
+                                setExpirationOpen(false)
+                                setCustomExpirationOpen(false)
+                              }
+                            }}
+                            placeholder={t('Select date')}
+                            className='tr-key-expiry-custom tr-key-expiry-date-only min-w-0'
+                            showTime={false}
+                            showClear={false}
+                            useCurrentTimeOnSelect
                           />
                         </FormControl>
                       )}
@@ -494,12 +486,10 @@ export function ApiKeysMutateDrawer({
           </div>
         </SideDrawerSection>
 
-        <SideDrawerSection
-          className={isUpdate ? undefined : 'tr-key-create-section'}
-        >
+        <SideDrawerSection className='tr-key-create-section'>
           <div className='tr-key-quota-head'>
             <SideDrawerSectionHeader
-              className={isUpdate ? undefined : 'tr-key-create-section-head'}
+              className='tr-key-create-section-head'
               title={t('Quota Settings')}
               description={t('Set quota amount and limits')}
               icon={<WalletCards className='size-4' />}
@@ -555,25 +545,20 @@ export function ApiKeysMutateDrawer({
         </SideDrawerSection>
 
         <Collapsible open={advancedOpen} onOpenChange={setAdvancedOpen}>
-          <SideDrawerSection
-            className={isUpdate ? undefined : 'tr-key-create-section'}
-          >
+          <SideDrawerSection className='tr-key-create-section'>
             <CollapsibleTrigger
               render={
                 <button
                   type='button'
                   className={cn(
                     'hover:bg-muted/40 flex w-full items-center gap-3 rounded-md py-1.5 text-left transition-colors',
-                    !isUpdate && 'tr-key-advanced-trigger'
+                    'tr-key-advanced-trigger'
                   )}
                 />
               }
             >
               <SideDrawerSectionHeader
-                className={cn(
-                  'flex-1',
-                  !isUpdate && 'tr-key-create-section-head'
-                )}
+                className='tr-key-create-section-head flex-1'
                 title={t('Advanced Settings')}
                 description={t('Set API key access restrictions')}
                 icon={<Settings2 className='size-4' />}
@@ -602,6 +587,8 @@ export function ApiKeysMutateDrawer({
                           selected={field.value}
                           onChange={field.onChange}
                           placeholder={t('Select models (empty for allow all)')}
+                          contentClassName='tr-key-model-select-content'
+                          itemClassName='tr-key-model-select-item'
                         />
                       </FormControl>
                       <FormDescription>
@@ -645,62 +632,37 @@ export function ApiKeysMutateDrawer({
     </Form>
   )
 
-  if (!isUpdate) {
-    return (
-      <Dialog open={open} onOpenChange={handleOpenChange}>
-        <DialogContent className='tr-key-create-dialog gap-0 p-0 sm:max-w-[560px]'>
-          <DialogHeader className='tr-key-create-dialog-head'>
-            <DialogTitle>{t('Create API Key')}</DialogTitle>
-            <DialogDescription>
-              {t('Add a new API key by providing necessary info.')}
-            </DialogDescription>
-          </DialogHeader>
-          <div className='tr-key-create-dialog-body'>{formNode}</div>
-          <DialogFooter className='tr-key-create-dialog-foot'>
-            <Button variant='outline' onClick={() => handleOpenChange(false)}>
-              {t('Cancel')}
-            </Button>
-            <Button
-              type='button'
-              onClick={form.handleSubmit(onSubmit, onInvalid)}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? t('Saving...') : t('Create API Key')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    )
-  }
-
   return (
-    <Sheet open={open} onOpenChange={handleOpenChange}>
-      <SheetContent
-        className={sideDrawerContentClassName('max-w-none sm:!max-w-[620px]')}
-      >
-        <SheetHeader className={sideDrawerHeaderClassName()}>
-          <SheetTitle>{t('Update API Key')}</SheetTitle>
-          <SheetDescription>
-            {t('Update the API key by providing necessary info.')}
-          </SheetDescription>
-        </SheetHeader>
-        {formNode}
-        <SheetFooter className={sideDrawerFooterClassName()}>
-          <SheetClose
-            render={<Button variant='outline' className='w-full sm:w-auto' />}
-          >
-            {t('Close')}
-          </SheetClose>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className='tr-key-create-dialog gap-0 p-0 sm:max-w-[560px]'>
+        <DialogHeader className='tr-key-create-dialog-head'>
+          <DialogTitle>
+            {isUpdate ? t('Update API Key') : t('Create API Key')}
+          </DialogTitle>
+          <DialogDescription>
+            {isUpdate
+              ? t('Update the API key by providing necessary info.')
+              : t('Add a new API key by providing necessary info.')}
+          </DialogDescription>
+        </DialogHeader>
+        <div className='tr-key-create-dialog-body'>{formNode}</div>
+        <DialogFooter className='tr-key-create-dialog-foot'>
+          <Button variant='outline' onClick={() => handleOpenChange(false)}>
+            {isUpdate ? t('Close') : t('Cancel')}
+          </Button>
           <Button
             type='button'
             onClick={form.handleSubmit(onSubmit, onInvalid)}
             disabled={isSubmitting}
-            className='w-full sm:w-auto'
           >
-            {isSubmitting ? t('Saving...') : t('Save changes')}
+            {isSubmitting
+              ? t('Saving...')
+              : isUpdate
+                ? t('Save changes')
+                : t('Create API Key')}
           </Button>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }
