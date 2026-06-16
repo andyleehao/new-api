@@ -20,12 +20,15 @@ ENV GOEXPERIMENT=greenteagc
 WORKDIR /build
 
 ADD go.mod go.sum ./
-RUN go mod download
 
 COPY . .
 COPY --from=builder /build/web/default/dist ./web/default/dist
 COPY --from=builder /build/web/default/dist ./web/classic/dist
-RUN go build -ldflags "-s -w -X 'github.com/QuantumNous/new-api/common.Version=$(cat VERSION)'" -o new-api
+RUN GOMAXPROCS=1 GOCACHE=/tmp/go-cache GOMODCACHE=/tmp/go-mod \
+    go mod download \
+    && GOMAXPROCS=1 GOCACHE=/tmp/go-cache GOMODCACHE=/tmp/go-mod \
+    go build -p=1 -ldflags "-s -w -X 'github.com/QuantumNous/new-api/common.Version=$(cat VERSION)'" -o new-api \
+    && rm -rf /tmp/go-cache /tmp/go-mod
 
 FROM debian:bookworm-slim@sha256:f06537653ac770703bc45b4b113475bd402f451e85223f0f2837acbf89ab020a
 
