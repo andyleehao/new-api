@@ -17,7 +17,7 @@ services:
   new-api:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.production
     image: tokensrelay/new-api-kami:production
     container_name: new-api
     restart: always
