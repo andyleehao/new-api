@@ -521,7 +521,7 @@ export function TokensRelayOverviewDashboard() {
 
   return (
     <div className='flex flex-col gap-4'>
-      <div className='grid gap-4 sm:grid-cols-2 xl:grid-cols-4'>
+      <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
         <MetricCard
           title={t('Balance')}
           value={formatQuota(Number(user?.quota ?? 0))}
@@ -553,9 +553,6 @@ export function TokensRelayOverviewDashboard() {
           tone='purple'
           loading={quotaQuery.isLoading}
         />
-      </div>
-
-      <div className='grid gap-4 sm:grid-cols-2 xl:grid-cols-4'>
         <MetricCard
           title={t('Range tokens')}
           value={formatTokens(totalTokens)}

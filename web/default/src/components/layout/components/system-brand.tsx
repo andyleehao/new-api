@@ -50,7 +50,9 @@ export function SystemBrand(props: SystemBrandProps) {
   const { status } = useStatus()
 
   const variant = props.variant ?? 'sidebar'
-  const name = resolveTokensRelayDisplayName(status?.system_name || props.defaultName)
+  const name = resolveTokensRelayDisplayName(
+    status?.system_name || props.defaultName
+  )
   const version =
     status?.version || props.defaultVersion || t('Unknown version')
 
@@ -73,15 +75,18 @@ export function SystemBrand(props: SystemBrandProps) {
   }
 
   return (
-    <SidebarMenu>
+    <SidebarMenu className='group-data-[collapsible=icon]:items-center'>
       <SidebarMenuItem>
         <SidebarMenuButton
           size='lg'
-          className='hover:text-sidebar-foreground active:text-sidebar-foreground cursor-default hover:bg-transparent active:bg-transparent'
+          className='hover:text-sidebar-foreground active:text-sidebar-foreground cursor-default group-data-[collapsible=icon]:justify-center hover:bg-transparent active:bg-transparent'
           render={<div />}
         >
-          <div className='bg-foreground text-background flex aspect-square size-9 items-center justify-center rounded-xl'>
-            <RelayMark className='size-[21px]' strokeWidth={1.6} />
+          <div className='bg-foreground text-background flex aspect-square size-9 items-center justify-center rounded-xl group-data-[collapsible=icon]:size-7 group-data-[collapsible=icon]:rounded-lg'>
+            <RelayMark
+              className='size-[21px] group-data-[collapsible=icon]:size-[17px]'
+              strokeWidth={1.6}
+            />
           </div>
           <div className='grid flex-1 text-start text-sm leading-tight group-data-[collapsible=icon]:hidden'>
             <span className='truncate font-semibold'>{name}</span>

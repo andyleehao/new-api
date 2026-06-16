@@ -62,6 +62,7 @@ export default defineConfig(({ envMode }) => {
     },
     html: {
       template: './index.html',
+      favicon: './public/tokensrelay-mark.svg',
     },
     server: {
       host: '0.0.0.0',

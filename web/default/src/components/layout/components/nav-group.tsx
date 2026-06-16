@@ -54,6 +54,9 @@ import {
 } from '../types'
 import { ChatPresetsItem } from './chat-presets-item'
 
+const COLLAPSED_NAV_BUTTON_CLASS =
+  'group-data-[collapsible=icon]:size-12! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:rounded-2xl group-data-[collapsible=icon]:p-0!'
+
 /**
  * Sidebar navigation group component
  * Renders a group of navigation items, supporting regular links and collapsible submenus
@@ -146,6 +149,7 @@ function SidebarMenuLink({ item, href }: { item: NavLink; href: string }) {
       <SidebarMenuButton
         isActive={checkIsActive(href, item)}
         tooltip={item.title}
+        className={COLLAPSED_NAV_BUTTON_CLASS}
         render={renderSidebarLink(item.url, () => setOpenMobile(false))}
       >
         {item.icon && <item.icon className='shrink-0' />}
@@ -189,7 +193,12 @@ function SidebarMenuCollapsible({
     >
       <CollapsibleTrigger
         className='group/collapsible-trigger'
-        render={<SidebarMenuButton tooltip={item.title} />}
+        render={
+          <SidebarMenuButton
+            tooltip={item.title}
+            className={COLLAPSED_NAV_BUTTON_CLASS}
+          />
+        }
       >
         {item.icon && <item.icon className='shrink-0' />}
         <span className='min-w-0 flex-1 truncate'>{item.title}</span>
@@ -202,9 +211,9 @@ function SidebarMenuCollapsible({
             <SidebarMenuSubItem key={subItem.title}>
               <SidebarMenuSubButton
                 isActive={checkIsActive(href, subItem)}
-                render={
-                  renderSidebarLink(subItem.url, () => setOpenMobile(false))
-                }
+                render={renderSidebarLink(subItem.url, () =>
+                  setOpenMobile(false)
+                )}
               >
                 {subItem.icon && <subItem.icon className='shrink-0' />}
                 <span className='min-w-0 flex-1 truncate'>{subItem.title}</span>
@@ -237,6 +246,7 @@ function SidebarMenuCollapsedDropdown({
             <SidebarMenuButton
               tooltip={item.title}
               isActive={checkIsActive(href, item)}
+              className={COLLAPSED_NAV_BUTTON_CLASS}
             />
           }
         >
@@ -254,13 +264,11 @@ function SidebarMenuCollapsedDropdown({
             {item.items.map((sub) => (
               <DropdownMenuItem
                 key={`${sub.title}-${sub.url}`}
-                render={
-                  renderSidebarLink(
-                    sub.url,
-                    () => undefined,
-                    `${checkIsActive(href, sub) ? 'bg-secondary' : ''}`
-                  )
-                }
+                render={renderSidebarLink(
+                  sub.url,
+                  () => undefined,
+                  `${checkIsActive(href, sub) ? 'bg-secondary' : ''}`
+                )}
               >
                 {sub.icon && <sub.icon />}
                 <span className='max-w-52 text-wrap'>{sub.title}</span>

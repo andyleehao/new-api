@@ -16,8 +16,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { ChevronsLeft, ChevronsRight } from 'lucide-react'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { MOTION_TRANSITION, MOTION_VARIANTS } from '@/lib/motion'
 import { useLayout } from '@/context/layout-provider'
@@ -59,7 +59,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible={collapsible} variant={variant}>
-      <SidebarHeader className='border-sidebar-border border-b px-3 py-3'>
+      <SidebarHeader className='border-sidebar-border border-b px-3 py-3 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-0'>
         <SystemBrand variant='sidebar' />
       </SidebarHeader>
       {view && <SidebarViewHeader view={view} />}
